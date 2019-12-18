@@ -1,0 +1,29 @@
+<ul>
+    <li>Uploaded by: <a href="<%=image.creator.url%>"><%=image.creator.username%></a></li>
+    <li>Posted at: <%=image.formatDate%></li>
+    <li>Views: <%=image.views%></li>
+    <li>Favorites: <%=image.favorites.length%></li>
+</ul>
+<h2><%=image.title%></h2>
+<img src="<%=image.path%>">
+<h2>Comments</h2>
+<% if(user) { %>
+    <form action="<%=image.commentUrl%>" method="POST">
+        <textarea name="content" id="content" placeholder="Enter a comment."></textarea>
+        <button>Submit</button>
+    </form>
+<% } else { %>
+    <p>You need to be logged in to submit comments.</p>
+<% } %>
+
+<% if(comments.length > 0) { %>
+    <% comments.forEach(function(comment) { %>
+        <ul>
+            <li><a href="<%=comment.creator.url%>"><%= comment.creator.username %></a></li>
+            <li><%= comment.formatDate %></li>
+            <li><%= comment.content %></li>
+        </ul>
+    <% }); %>
+<% } else { %>
+    <p>No comments have been made yet.</p>
+<% } %>

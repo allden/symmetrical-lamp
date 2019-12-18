@@ -1,0 +1,8 @@
+<%- include('./errorHandling/messages'); %>
+<% if(images.length > 0) { %>
+    <% images.forEach(function(image) { %>
+        <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+    <% }); %>
+<% } else { %>
+    <p>There are no images currently.</p>
+<% } %>

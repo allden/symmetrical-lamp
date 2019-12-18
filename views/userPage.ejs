@@ -1,0 +1,14 @@
+<% console.log(); %>
+<!-- heading welcome -->
+<% if(user && user._id.toString() === pageUser._id.toString()) { %>
+    <h1>Welcome, <%= user.username %></h1>
+<% }; %>
+
+<!-- image section -->
+<% if(images.length > 0) { %>
+    <% images.forEach(function(image) { %>
+        <img src="<%=image.path%>">
+    <% }); %>
+<% } else { %>
+    <p>This user has no submissions.</p>
+<% } %>
