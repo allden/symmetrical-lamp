@@ -4,11 +4,36 @@
     <h1>Welcome, <%= user.username %></h1>
 <% }; %>
 
+<h2>About</h2>
+<img src="<%=pageUser.profilePicture%>">
+<ul>
+    <li><%=pageUser.username%></li>
+    <% if(pageUser.description) { %>
+        <li><%=pageUser.description%></li>
+    <% } %>
+</ul>
+<h2>Gallery</h2>
 <!-- image section -->
 <% if(images.length > 0) { %>
     <% images.forEach(function(image) { %>
-        <img src="<%=image.path%>">
+        <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
     <% }); %>
 <% } else { %>
     <p>This user has no submissions.</p>
+<% } %>
+
+<h2>Favorites</h2>
+<% let userFavorites = [] %>
+<% allImages.forEach(function(image) { %>
+    <% if(image.favorites.includes(pageUser._id)) { %>
+        <% userFavorites.push(image); %>
+    <% } %>
+<% }); %>
+
+<% if(userFavorites.length > 0) { %>
+    <% userFavorites.forEach(function(image) { %>
+        <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+    <% }); %>
+<% } else { %>
+    <p>This user has no favorites.</p>
 <% } %>

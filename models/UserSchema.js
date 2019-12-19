@@ -21,8 +21,14 @@ const UserSchema = new Schema({
         min: 13, 
         required: true
     },
-    description: String,
-    profilePicture: String, //make sure to set a default later
+    description: {
+        type: String,
+        default: 'No description set yet.'
+    },
+    profilePicture: {
+        type: String,
+        default: '/images/default.png'
+    },
     created: {
         type: Date, 
         default: Date.now

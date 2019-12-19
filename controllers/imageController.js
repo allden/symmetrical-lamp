@@ -58,3 +58,24 @@ module.exports.imagePage = (req, res) => {
     })
     .catch(err => console.error(err));
 };
+
+module.exports.imageFavorite = (req, res) => {
+    let id = req.params.id;
+
+    Image.findByIdAndUpdate(id, {$push: {favorites: req.user._id}})
+    .then(image => {
+        req.flash('success', 'Image favorited!');
+        res.redirect(image.url);
+    })
+    .catch(err => console.error(err));
+};
+
+module.exports.imageUnfavorite = (req, res) => {
+    let id = req.params.id;
+
+    Image.findByIdAndUpdate(id, {$pull: {favorites: req.user._id}})
+    .then(image => {
+        req.flash('success', 'Image is no longer in your favorites!');
+        res.redirect(image.url);
+    })
+};

@@ -4,6 +4,8 @@
     <input type="text" name="title" id="title" placeholder="Enter a title." value="<%= title !== '' ? title : ''%>">
     <label for="image">Image</label>
     <input type="file" name="image">
+    <label for="tags">Tags</label>
+    <input type="text" name="tags" id="tags" placeholder="Ex. black_hair, blue_eyes">
     <label>Is this adult content?</label>
     <% if(nsfw===false) { %>
         <input type="radio" name="nsfw" value="true">Yes

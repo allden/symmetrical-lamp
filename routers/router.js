@@ -40,6 +40,8 @@ const checkAuth = (req, res, next) => {
 };
 
 // image
+router.post('/image/:id/unfavorite', imageController.imageUnfavorite);
+router.post('/image/:id/favorite', imageController.imageFavorite);
 router.post('/image/:id/comment', commentController.postComment);
 router.get('/image/:id', imageController.imagePage);
 // user

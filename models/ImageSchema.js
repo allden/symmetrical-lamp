@@ -41,4 +41,16 @@ ImageSchema
 .get(function() {
     return '/image/' + this._id + '/comment';
 });
+
+ImageSchema
+.virtual('favoriteUrl')
+.get(function() {
+    return '/image/' + this._id + '/favorite';
+});
+
+ImageSchema
+.virtual('unfavoriteUrl')
+.get(function() {
+    return '/image/' + this._id + '/unfavorite';
+});
 module.exports = mongoose.model('Image', ImageSchema);

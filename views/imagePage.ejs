@@ -1,11 +1,34 @@
+<%- include('./errorHandling/messages'); %>
 <ul>
     <li>Uploaded by: <a href="<%=image.creator.url%>"><%=image.creator.username%></a></li>
     <li>Posted at: <%=image.formatDate%></li>
     <li>Views: <%=image.views%></li>
     <li>Favorites: <%=image.favorites.length%></li>
+    <li>Tags: 
+        <ul>
+            <% if(image.tags.length > 0) { %>
+                <% image.tags.forEach(function(tag) { %>
+                    <li><%=tag%></li>
+                <% }) %>
+            <% } else { %>
+                <li>No tags to display.</li>
+            <% } %>
+        </ul>
+    </li>
 </ul>
 <h2><%=image.title%></h2>
 <img src="<%=image.path%>">
+<% if(user) { %>
+    <% if(image.favorites.includes(user._id)) { %>
+        <form action="<%=image.unfavoriteUrl%>" method="POST">
+            <button>Unfavorite</button>
+        </form>    
+    <% } else { %>
+        <form action="<%=image.favoriteUrl%>" method="POST">
+            <button>Favorite</button>
+        </form>
+    <% } %>
+<% } %>
 <h2>Comments</h2>
 <% if(user) { %>
     <form action="<%=image.commentUrl%>" method="POST">

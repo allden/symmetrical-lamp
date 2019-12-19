@@ -91,11 +91,15 @@ module.exports.logoutPage = (req, res) => {
 
 module.exports.userPage = (req, res) => {
     let id = req.params.id;
-    User.findById(id)
-    .then(user => {
-        Image.find({creator: user._id})
-        .then(images => {
-            res.render('userPage', {pageUser: user, images});
+    Image.find({})
+    .then(allImages => {
+        User.findById(id)
+        .then(user => {
+            Image.find({creator: user._id})
+            .then(images => {
+                res.render('userPage', {pageUser: user, images, allImages});
+            })
+            .catch(err => console.error(err));
         })
         .catch(err => console.error(err));
     })
