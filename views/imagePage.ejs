@@ -12,7 +12,7 @@
                 <% }) %>
             <% } else { %>
                 <li>No tags to display.</li>
-            <% } %>
+            <% }; %>
         </ul>
     </li>
 </ul>
@@ -27,8 +27,8 @@
         <form action="<%=image.favoriteUrl%>" method="POST">
             <button>Favorite</button>
         </form>
-    <% } %>
-<% } %>
+    <% }; %>
+<% }; %>
 <h2>Comments</h2>
 <% if(user) { %>
     <form action="<%=image.commentUrl%>" method="POST">
@@ -37,7 +37,7 @@
     </form>
 <% } else { %>
     <p>You need to be logged in to submit comments.</p>
-<% } %>
+<% }; %>
 
 <% if(comments.length > 0) { %>
     <% comments.forEach(function(comment) { %>
@@ -49,4 +49,4 @@
     <% }); %>
 <% } else { %>
     <p>No comments have been made yet.</p>
-<% } %>
+<% }; %>

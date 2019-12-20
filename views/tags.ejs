@@ -1,0 +1,27 @@
+<%- include('./errorHandling/messages'); %>
+<% let isAdmin = false %>
+<% if(user) { %>
+    <% if(user.admin) { %>
+        <% isAdmin = true %>
+        <form action="/tags/create" method="POST">
+            <label for="tags">Tags</label>
+            <input type="text" name="tags" id="tags" placeholder="Enter tags separated by commas. Ex. black_hair, blue_eyes">
+            <button>Create</button>
+        </form>
+    <% } %>
+<% }; %>
+
+<% if(tags.length > 0) { %>
+    <ul>
+        <% tags.forEach(function(tag) { %>
+            <li><%=tag.name%></li>
+            <% if(isAdmin) { %>
+                <form action="<%=tag.deleteUrl%>" method="POST">
+                    <button>Delete</button>
+                </form>
+            <% } %>
+        <% }); %>
+    </ul>
+<% } else { %>
+    <p>No tags to display.</p>
+<% }; %>

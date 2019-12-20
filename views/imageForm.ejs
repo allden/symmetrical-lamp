@@ -1,11 +1,15 @@
-<%- include('./errorHandling/messages') %>
+<%- include('./errorHandling/messages'); %>
+<ul>
+<% tags.forEach(function(tag) { %>
+    <li><%=tag.name%></li>
+<% }); %>
+</ul>
 <form action="/upload" method="POST" enctype="multipart/form-data">
     <label for="title">Title</label>
     <input type="text" name="title" id="title" placeholder="Enter a title." value="<%= title !== '' ? title : ''%>">
     <label for="image">Image</label>
     <input type="file" name="image">
-    <label for="tags">Tags</label>
-    <input type="text" name="tags" id="tags" placeholder="Ex. black_hair, blue_eyes">
+    <input type="hidden" name="tags">
     <label>Is this adult content?</label>
     <% if(nsfw===false) { %>
         <input type="radio" name="nsfw" value="true">Yes
@@ -13,7 +17,7 @@
     <% } else { %>
         <input type="radio" name="nsfw" value="true" checked>Yes
         <input type="radio" name="nsfw" value="false">No
-    <% } %>
+    <% }; %>
     <button>Submit</button>
 </form>
 <a href="/">Go Back</a>

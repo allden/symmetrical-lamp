@@ -1,8 +1,13 @@
 const Image = require('../models/ImageSchema');
 const Comment = require('../models/CommentSchema');
+const Tag = require('../models/TagSchema');
 
 module.exports.imageForm = (req, res) => {
-    res.render('imageForm', {nsfw: false, title: ''});
+    Tag.find({})
+    .then((tags) => {
+        res.render('imageForm', {nsfw: false, title: '', tags});
+    })
+    .catch(err => console.error(err));
 };
 
 module.exports.imagePost = (req, res) => {

@@ -28,6 +28,7 @@ const upload = multer({
 const userController = require('../controllers/userController');
 const imageController = require('../controllers/imageController');
 const commentController = require('../controllers/commentController');
+const tagController = require('../controllers/tagController');
 const router = express.Router();
 
 const checkAuth = (req, res, next) => {
@@ -44,8 +45,13 @@ router.post('/image/:id/unfavorite', imageController.imageUnfavorite);
 router.post('/image/:id/favorite', imageController.imageFavorite);
 router.post('/image/:id/comment', commentController.postComment);
 router.get('/image/:id', imageController.imagePage);
+// tags
+router.post('/tags/create', tagController.createTags);
+router.post('/tags/:id/delete', tagController.deleteTag);
 // user
 router.get('/user/:id', userController.userPage);
+// also tags
+router.get('/tags', tagController.tags);
 // register
 router.get('/register', userController.registrationForm);
 router.post('/register', userController.registrationPost);

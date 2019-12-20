@@ -10,6 +10,12 @@ const TagSchema = new Schema({
 });
 
 TagSchema
+.virtual('deleteUrl')
+.get(function() {
+    return '/tags/' + this._id + '/delete';
+});
+
+TagSchema
 .virtual('formatDate')
 .get(function() {
     return this.created.toUTCString();
