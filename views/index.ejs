@@ -9,6 +9,9 @@
 <% } else { %>
     <p>There are no images currently.</p>
 <% }; %>
-<% for(let i = 0; i < totalPages; i++) { %>
-    <a href="/?page=<%=i%>"><%=i%></a>
-<% }; %>
+
+<% if(totalPages > 0) { %>
+    <% for(let i = 0; i < totalPages; i++) { %>
+        <a href="/?page=<%=i%>"><%=i%></a>
+    <% }; %>
+<% } %>

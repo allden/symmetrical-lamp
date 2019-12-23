@@ -12,27 +12,25 @@
     <% }; %>
 </ul>
 <h2>Gallery</h2>
-<!-- image section -->
-<% if(images.length > 0) { %>
-    <% images.forEach(function(image) { %>
-        <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
-    <% }); %>
-<% } else { %>
-    <p>This user has no submissions.</p>
+<div class="gallery">
+    <!-- image section -->
+    <% if(images.length > 0) { %>
+        <% images.forEach(function(image) { %>
+            <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+        <% }); %>
+    <% } else { %>
+        <p>This user has no submissions.</p>
+    <% }; %>
+</div>
+<% for(let i = 0; i < pages; i++) { %>
+    <a href="<%=pageUser.url%>/?page=<%=i%>"><%=i%></a>
 <% }; %>
 
 <h2>Favorites</h2>
-<% let userFavorites = [] %>
-<% allImages.forEach(function(image) { %>
-    <% if(image.favorites.includes(pageUser._id)) { %>
-        <% userFavorites.push(image); %>
-    <% } %>
-<% }); %>
-
-<% if(userFavorites.length > 0) { %>
-    <% userFavorites.forEach(function(image) { %>
-        <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+<% if(favorites) { %>
+    <% favorites.forEach(function(favorite) { %>
+        <a href="<%=favorite.url%>"><img src="<%=favorite.path%>"></a>
     <% }); %>
 <% } else { %>
-    <p>This user has no favorites.</p>
+    <p>No favorites to display.</p>
 <% }; %>

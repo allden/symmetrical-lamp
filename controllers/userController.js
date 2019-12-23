@@ -79,7 +79,7 @@ module.exports.indexPage = (req, res) => {
     let page = req.query.page;
     Image.find({})
     .then(allImages => {
-        let totalPages = allImages.length / limiter;
+        let totalPages = Math.ceil(allImages.length / limiter);
         Image.find({})
         .sort({uploaded: 'desc'})
         .limit(limiter)
@@ -101,13 +101,23 @@ module.exports.logoutPage = (req, res) => {
 
 module.exports.userPage = (req, res) => {
     let id = req.params.id;
-    Image.find({})
-    .then(allImages => {
-        User.findById(id)
-        .then(user => {
+    let page = req.query.page;
+    let limiter = 9;
+    User.findById(id)
+    .then(user => {
+        Image.find({favorites: user._id})
+        .then(favorites => {
             Image.find({creator: user._id})
-            .then(images => {
-                res.render('userPage', {pageUser: user, images, allImages});
+            .then(createdByUser => {
+                let pages = Math.ceil(createdByUser.length / limiter);
+                Image.find({creator: user._id})
+                .limit(limiter)
+                .skip(limiter * page)
+                .exec()
+                .then(images => {
+                    res.render('userPage', {pageUser: user, images, favorites, pages});
+                })
+                .catch(err => console.error(err));
             })
             .catch(err => console.error(err));
         })
@@ -147,7 +157,6 @@ module.exports.settingsPageInfoPost = (req, res) => {
 
 module.exports.settingsPagePasswordPost = (req, res) => {
     let { password, password2 } = req.body;
-    console.log(password, password2);
     let errors = [];
     if(password.length < 6) {
         errors.push('Password must be longer than 5 characters.');
