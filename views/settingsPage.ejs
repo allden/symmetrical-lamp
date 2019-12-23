@@ -1,0 +1,18 @@
+<%- include('./errorHandling/messages'); %>
+<h1>Account Settings</h1>
+<h2>Info:</h2>
+<form action="/settings/info" method="POST" enctype="multipart/form-data">
+    <label for="profile">Profile Picture</label>
+    <input type="file" id="profile" name="profilePicture">
+    <label for="description">Description</label>
+    <textarea id="description" name="description"></textarea>
+    <button>Change Info</button>
+</form>
+<h2>Change Password:</h2>
+<form action="/settings/password" method="POST">
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password">
+    <label for="password2">Confirm Password</label>
+    <input type="password" id="password2" name="password2">
+    <button>Change Password</button>
+</form>

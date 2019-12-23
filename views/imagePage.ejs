@@ -1,4 +1,5 @@
 <%- include('./errorHandling/messages'); %>
+<!-- image info -->
 <ul>
     <li>Uploaded by: <a href="<%=image.creator.url%>"><%=image.creator.username%></a></li>
     <li>Posted at: <%=image.formatDate%></li>
@@ -8,14 +9,25 @@
         <ul>
             <% if(image.tags.length > 0) { %>
                 <% image.tags.forEach(function(tag) { %>
-                    <li><%=tag%></li>
-                <% }) %>
+                    <a href="<%=tag.url%>"><li><%=tag.name%></li></a>
+                <% }); %>
             <% } else { %>
                 <li>No tags to display.</li>
             <% }; %>
         </ul>
     </li>
 </ul>
+
+<!-- actions -->
+<% if(user) { %>
+    <% if(user.admin || user.username === image.creator.username) { %>
+        <form action="<%=image.deleteUrl%>" method="POST">
+            <button>Delete</button>
+        </form>
+        <a href="<%=image.updateUrl%>">Edit</a>
+    <% }; %>
+<% }; %>
+<!-- image -->
 <h2><%=image.title%></h2>
 <img src="<%=image.path%>">
 <% if(user) { %>
@@ -29,6 +41,7 @@
         </form>
     <% }; %>
 <% }; %>
+<!-- comments -->
 <h2>Comments</h2>
 <% if(user) { %>
     <form action="<%=image.commentUrl%>" method="POST">

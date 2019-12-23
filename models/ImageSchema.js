@@ -37,6 +37,18 @@ ImageSchema
 });
 
 ImageSchema
+.virtual('updateUrl')
+.get(function() {
+    return '/image/' + this._id + '/update';
+});
+
+ImageSchema
+.virtual('deleteUrl')
+.get(function() {
+    return '/image/' + this._id + '/delete';
+});
+
+ImageSchema
 .virtual('commentUrl')
 .get(function() {
     return '/image/' + this._id + '/comment';

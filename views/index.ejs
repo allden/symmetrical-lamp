@@ -1,9 +1,14 @@
 <%- include('./errorHandling/messages'); %>
 <h2>Recently Uploaded</h2>
 <% if(images.length > 0) { %>
-    <% images.forEach(function(image) { %>
-        <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
-    <% }); %>
+    <div class="gallery">
+        <% images.forEach(function(image) { %>
+            <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+        <% }); %>
+    </div>
 <% } else { %>
     <p>There are no images currently.</p>
+<% }; %>
+<% for(let i = 0; i < totalPages; i++) { %>
+    <a href="/?page=<%=i%>"><%=i%></a>
 <% }; %>

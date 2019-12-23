@@ -7,7 +7,7 @@ const PORT = 5000 || process.env.PORT;
 
 // db
 const mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI, {useUnifiedTopology: true, useNewUrlParser: true});
+mongoose.connect(process.env.MONGODB_URI, {useUnifiedTopology: true, useNewUrlParser: true, useFindAndModify: false});
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Something went wrong'));
 
@@ -28,6 +28,7 @@ app.use(express.static('public'));
 app.use(session({secret: process.env.SECRET, resave: false, saveUninitialized: true}));
 app.use(flash());
 app.use(express.urlencoded({extended: true}));
+app.use(express.json());
 require('./config/passportConfig').lsConfig(passport);
 app.use(passport.initialize());
 app.use(passport.session());

@@ -14,7 +14,7 @@
 <% if(tags.length > 0) { %>
     <ul>
         <% tags.forEach(function(tag) { %>
-            <li><%=tag.name%></li>
+            <a href="<%=tag.url%>"><li><%=tag.name%></li></a>
             <% if(isAdmin) { %>
                 <form action="<%=tag.deleteUrl%>" method="POST">
                     <button>Delete</button>

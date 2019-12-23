@@ -2,6 +2,9 @@ const User = require('../models/UserSchema');
 const Image = require('../models/ImageSchema');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
+
 
 // need to include errMsg and successMsg on every render
 module.exports.registrationForm = (req, res) => {
@@ -72,13 +75,20 @@ module.exports.loginPost = passport.authenticate('local', { successRedirect: '/'
                                                             successFlash: 'You have successfully logged in!'});
 
 module.exports.indexPage = (req, res) => {
+    let limiter = 9;
+    let page = req.query.page;
     Image.find({})
-    .then(images => {
-        if(req.user) {
-            res.render('index', { images });
-        } else {
-            res.render('index', { images });
-        };
+    .then(allImages => {
+        let totalPages = allImages.length / limiter;
+        Image.find({})
+        .sort({uploaded: 'desc'})
+        .limit(limiter)
+        .skip(limiter*page)
+        .exec()
+        .then(images => {
+            res.render('index', { images, totalPages });
+        })
+        .catch(err => console.error(err));
     })
     .catch(err => console.error(err));
 };
@@ -104,6 +114,68 @@ module.exports.userPage = (req, res) => {
         .catch(err => console.error(err));
     })
     .catch(err => console.error(err));
+};
+
+module.exports.settingsPage = (req, res) => {
+    res.render('settingsPage');
+};
+
+module.exports.settingsPageInfoPost = (req, res) => {
+    let description = req.body.description || req.user.description;
+    let profilePicture = req.file;
+    console.log(profilePicture, description);
+    if(profilePicture) {
+        profilePicture = '/' + profilePicture.path.split('/').slice(1).join('/');
+        if(req.user.profilePicture !== '/images/default.png') {
+            fs.unlink(path.join(__dirname, '..', 'public', req.user.profilePicture), err => {
+                if(err) throw err;
+            });
+        };
+    } else {
+        profilePicture = req.user.profilePicture;
+    };
+    console.log(profilePicture, description);
+
+    User.findByIdAndUpdate(req.user.id, { description, profilePicture })
+    .then((user) => {
+        console.log(user);
+        req.flash('success', 'Successfully updated.');
+        res.redirect('/settings');
+    })
+    .catch(err => console.error(err));
+};
+
+module.exports.settingsPagePasswordPost = (req, res) => {
+    let { password, password2 } = req.body;
+    console.log(password, password2);
+    let errors = [];
+    if(password.length < 6) {
+        errors.push('Password must be longer than 5 characters.');
+    };
+
+    if(password !== password2) {
+        errors.push('Passwords must match.');
+    };
+
+    if(errors.length > 0) {
+        req.flash('error', errors);
+        res.redirect('/settings');
+    } else {
+        bcrypt.genSalt(10)
+        .then(salt => {
+            bcrypt.hash(password, salt)
+            .then(hash => {
+                User.findByIdAndUpdate(req.user._id, {password: hash})
+                .then(() => {
+                    req.flash('success', 'Password changed.');
+                    res.redirect('/settings');
+                })
+                .catch(err => console.error(err));
+            })
+            .catch(err => console.err(err));
+        })
+        .catch(err => console.error(err));
+    };
 };
 
 let reRender = (req, res, username, password, password2, age, email) => {

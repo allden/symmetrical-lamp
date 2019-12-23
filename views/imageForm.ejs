@@ -1,15 +1,19 @@
 <%- include('./errorHandling/messages'); %>
+<h2>Available Tags</h2>
 <ul>
 <% tags.forEach(function(tag) { %>
-    <li><%=tag.name%></li>
+    <li class="select" value="<%=tag._id%>"><%=tag.name%></li>
 <% }); %>
+</ul>
+<h2>Selected Tags</h2>
+<ul class="selected"></ul>
 </ul>
 <form action="/upload" method="POST" enctype="multipart/form-data">
     <label for="title">Title</label>
     <input type="text" name="title" id="title" placeholder="Enter a title." value="<%= title !== '' ? title : ''%>">
     <label for="image">Image</label>
     <input type="file" name="image">
-    <input type="hidden" name="tags">
+    <input type="hidden" name="tags" id="tags">
     <label>Is this adult content?</label>
     <% if(nsfw===false) { %>
         <input type="radio" name="nsfw" value="true">Yes
@@ -21,3 +25,4 @@
     <button>Submit</button>
 </form>
 <a href="/">Go Back</a>
+<script src="/scripts/tagFunctionality.js"></script>

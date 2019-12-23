@@ -10,6 +10,12 @@ const TagSchema = new Schema({
 });
 
 TagSchema
+.virtual('url')
+.get(function() {
+    return '/tags/' + this._id;
+});
+
+TagSchema
 .virtual('deleteUrl')
 .get(function() {
     return '/tags/' + this._id + '/delete';

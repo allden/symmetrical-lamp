@@ -1,0 +1,14 @@
+<h2>More Tags</h2>
+<ul>
+    <% tags.forEach(function(tag) { %>
+        <a href="<%=tag.url%>"><li><%=tag.name%></li></a>
+    <% }); %>
+</ul>
+<h2>Images for <%=tag.name%></h2>
+<% if(images.length > 0) { %>
+    <% images.forEach(function(image) { %>
+        <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+    <% }); %>
+<% } else { %>
+    <p>No images to display.</p>
+<% }; %>
