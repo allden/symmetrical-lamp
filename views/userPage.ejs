@@ -16,21 +16,36 @@
     <!-- image section -->
     <% if(images.length > 0) { %>
         <% images.forEach(function(image) { %>
-            <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+            <!-- nsfw/sfw block -->
+            <% if(image.nsfw) { %>
+                <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
+            <% } else { %>
+                <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+            <% }; %>
+            <!-- end -->
         <% }); %>
     <% } else { %>
         <p>This user has no submissions.</p>
     <% }; %>
 </div>
-<% for(let i = 0; i < pages; i++) { %>
-    <a href="<%=pageUser.url%>/?page=<%=i%>"><%=i%></a>
+<% if(pages > 1) { %>
+    <% for(let i = 0; i < pages; i++) { %>
+        <a href="<%=pageUser.url%>/?page=<%=i%>"><%=i%></a>
+    <% }; %>
 <% }; %>
 
 <h2>Favorites</h2>
-<% if(favorites) { %>
-    <% favorites.forEach(function(favorite) { %>
-        <a href="<%=favorite.url%>"><img src="<%=favorite.path%>"></a>
-    <% }); %>
-<% } else { %>
-    <p>No favorites to display.</p>
-<% }; %>
+<div class="favorites">
+    <% if(favorites.length > 0) { %>
+        <% favorites.forEach(function(image) { %>
+            <% if(image.nsfw) { %>
+                <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
+            <% } else { %>
+                <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+            <% }; %>
+        <% }); %>
+    <% } else { %>
+        <p>No favorites to display.</p>
+    <% }; %>
+</div>
+<a href="<%=pageUser.favoritesUrl%>">Show All</a>

@@ -1,0 +1,18 @@
+<h1><%=user.username%>'s Favorites</h1>
+<div class="gallery">
+    <% images.forEach(function(image) { %>
+        <!-- nsfw/sfw block -->
+        <% if(image.nsfw) { %>
+            <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
+        <% } else { %>
+            <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+        <% }; %>
+        <!-- end -->
+    <% }); %>
+</div>
+
+<% if(pages > 1) { %>
+    <% for(let i = 0; i < pages; i++) { %>
+        <a href="<%=user.favoritesUrl%>/?page=<%=i%>"><%=i%></a>
+    <% }; %>
+<% }; %>

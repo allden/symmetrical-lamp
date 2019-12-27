@@ -33,8 +33,6 @@ const UserSchema = new Schema({
         type: Date, 
         default: Date.now
     },
-    following: [{type: Schema.Types.ObjectId, ref: 'User'}],
-    followUploads: [{type: Schema.Types.ObjectId, ref: 'Image'}],
     admin: {
         type: Boolean,
         default: false
@@ -45,6 +43,12 @@ UserSchema
 .virtual('url')
 .get(function() {
     return '/user/' + this._id;
+});
+
+UserSchema
+.virtual('favoritesUrl')
+.get(function() {
+    return '/user/' + this._id + '/favorites';
 });
 
 UserSchema

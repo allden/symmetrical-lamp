@@ -48,19 +48,20 @@ router.post('/image/:id/favorite', imageController.imageFavorite);
 router.post('/image/:id/comment', commentController.postComment);
 router.post('/image/:id/delete', imageController.imageDelete);
 router.get('/image/:id', imageController.imagePage);
-// tags
-router.post('/tags/create', tagController.tagsCreate);
-router.post('/tags/:id/delete', tagController.tagDelete);
 // user
+router.get('/user/:id/favorites', userController.userFavoritesPage);
 router.get('/user/:id', userController.userPage);
 // settings
 router.post('/settings/info', upload.single('profilePicture'), userController.settingsPageInfoPost);
 router.post('/settings/password', userController.settingsPagePasswordPost);
-// also tags
+router.get('/settings', userController.settingsPage);
+// tags
+router.post('/tags/create', tagController.tagsCreate);
+router.post('/tags/:id/delete', tagController.tagDelete);
 router.get('/tags/:id', tagController.tagPage);
 router.get('/tags', tagController.tags);
-// more settings
-router.get('/settings', userController.settingsPage);
+// search
+router.post('/search', tagController.searchByTags);
 // register
 router.get('/register', userController.registrationForm);
 router.post('/register', userController.registrationPost);

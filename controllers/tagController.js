@@ -69,3 +69,40 @@ module.exports.tagPage = (req, res) => {
     })
     .catch(err => console.error(err));
 };
+
+module.exports.searchByTags = (req, res) => {
+    let searchParams = req.body.search.split(', ');
+    let tagsMatched = [];
+    let searchIteration = new Promise((resolve, reject) => {
+        searchParams.forEach(param => {
+            console.log(param);
+            Tag.findOne({name: param})
+            .then(tag => {
+                tagsMatched.push(tag._id);
+            })
+            .catch(err => {
+                console.error(err)
+                reject();
+            });
+        })
+        console.log(tagsMatched);
+        resolve();
+    });
+
+    searchIteration.then(() => {
+        let limiter = 9;
+        let page = req.query.page;
+        Image.find({tags: tagsMatched})
+        .then(allImages => {
+            let totalPages = allImages.length / limiter;
+            Image.find({tags: {$all: tagsMatched}})
+            .limit(limiter)
+            .skip(limiter * page)
+            .then(images => {
+                res.render('index', {images, totalPages});
+            })
+            .catch(err => console.error(err));
+        })
+        .catch(err => console.error(err));
+    });
+}

@@ -1,16 +1,27 @@
 <%- include('./errorHandling/messages'); %>
+<!-- needs to be fixed++++ -->
+<form method="POST" action="/search">
+<input type="text" name="search" placeholder="Ex. black_hair, blue_eyes">
+<button>Search</button>
+</form>
 <h2>Recently Uploaded</h2>
 <% if(images.length > 0) { %>
     <div class="gallery">
         <% images.forEach(function(image) { %>
-            <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+            <!-- nsfw/sfw block -->
+            <% if(image.nsfw) { %>
+                <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
+            <% } else { %>
+                <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+            <% }; %>
+            <!-- end -->
         <% }); %>
     </div>
 <% } else { %>
     <p>There are no images currently.</p>
 <% }; %>
 
-<% if(totalPages > 0) { %>
+<% if(totalPages > 1) { %>
     <% for(let i = 0; i < totalPages; i++) { %>
         <a href="/?page=<%=i%>"><%=i%></a>
     <% }; %>

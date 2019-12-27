@@ -137,3 +137,11 @@ module.exports.imageUnfavorite = (req, res) => {
         res.redirect(image.url);
     })
 };
+
+module.exports.searchByTags = (req, res) => {
+    let searchParams = req.body.search.split(', ');
+    let tags = [];
+    searchParams.forEach(param => {
+        
+    })
+}

@@ -77,6 +77,7 @@ module.exports.loginPost = passport.authenticate('local', { successRedirect: '/'
 module.exports.indexPage = (req, res) => {
     let limiter = 9;
     let page = req.query.page;
+    
     Image.find({})
     .then(allImages => {
         let totalPages = Math.ceil(allImages.length / limiter);
@@ -103,9 +104,11 @@ module.exports.userPage = (req, res) => {
     let id = req.params.id;
     let page = req.query.page;
     let limiter = 9;
+
     User.findById(id)
     .then(user => {
         Image.find({favorites: user._id})
+        .sort({uploaded: 'desc'})
         .then(favorites => {
             Image.find({creator: user._id})
             .then(createdByUser => {
@@ -113,11 +116,36 @@ module.exports.userPage = (req, res) => {
                 Image.find({creator: user._id})
                 .limit(limiter)
                 .skip(limiter * page)
+                .sort({uploaded: 'desc'})
                 .exec()
                 .then(images => {
                     res.render('userPage', {pageUser: user, images, favorites, pages});
                 })
                 .catch(err => console.error(err));
+            })
+            .catch(err => console.error(err));
+        })
+        .catch(err => console.error(err));
+    })
+    .catch(err => console.error(err));
+};
+
+module.exports.userFavoritesPage = (req, res) => {
+    let id = req.params.id;
+    let page = req.query.page;
+    let limiter = 9;
+
+    Image.find({favorites: id})
+    .then(allFavoritedImages => {
+        let pages = allFavoritedImages.length / limiter;
+        User.findById(id)
+        .then(user => {
+            Image.find({favorites: id})
+            .limit(limiter)
+            .skip(limiter * page)
+            .sort({uploaded: 'desc'})
+            .then(images => {
+                res.render('favoritesPage', {images, user, pages});
             })
             .catch(err => console.error(err));
         })
