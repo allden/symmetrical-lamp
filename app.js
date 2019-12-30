@@ -16,6 +16,7 @@ const expressLayouts = require('express-ejs-layouts');
 
 // logins and error handling
 const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 const flash = require('connect-flash');
 const passport = require('passport');
 
@@ -25,7 +26,7 @@ app.use(expressLayouts);
 app.use(express.static('public'));
 
 // passport and flash
-app.use(session({secret: process.env.SECRET, resave: false, saveUninitialized: true}));
+app.use(session({secret: process.env.SECRET, store: new MongoStore({mongooseConnection: mongoose.connection}), resave: false, saveUninitialized: true}));
 app.use(flash());
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
