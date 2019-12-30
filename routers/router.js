@@ -75,4 +75,7 @@ router.get('/upload', checkAuth, imageController.imageForm);
 router.post('/upload', checkAuth, upload.single('image'), imageController.imagePost);
 // default
 router.get('/', imageController.indexPage);
+router.get('*', (req, res) => {
+    res.render('404');
+});
 module.exports = router;
