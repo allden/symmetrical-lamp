@@ -1,28 +1,60 @@
-<%- include('./errorHandling/messages'); %>
 <!-- needs to be fixed++++ -->
-<form method="POST" action="/search">
-<input type="text" name="search" placeholder="Ex. black_hair, blue_eyes">
-<button>Search</button>
-</form>
-<h2>Recently Uploaded</h2>
-<% if(images.length > 0) { %>
-    <div class="gallery">
-        <% images.forEach(function(image) { %>
-            <!-- nsfw/sfw block -->
-            <% if(image.nsfw) { %>
-                <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
+<div class="box row">
+    <%- include('./errorHandling/messages'); %>
+    <div class="column align-top">
+        <div class="left row">
+            <h3>Search</h3>
+            <form class="justify-center row" method="POST" action="/search">
+                <input type="text" name="search" placeholder="Ex. black_hair, blue_eyes">
+                <button class="btn">Search</button>
+            </form>
+            <h3>Tags</h3>
+            <div class="tags">
+                <ul>
+                    <% tags.forEach(tag => { %>
+                        <li><a href="<%=tag.url%>"><%=tag.name%></a></li>
+                    <% }); %>
+                </ul>
+            </div>
+        </div>
+        <div class="right align-center row">
+            <% if(images.length > 0) { %>
+                <div class="gallery">
+                    <% images.forEach(function(image) { %>
+                        <!-- nsfw/sfw block -->
+                        <% if(image.nsfw) { %>
+                            <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
+                        <% } else { %>
+                            <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+                        <% }; %>
+                        <!-- end -->
+                    <% }); %>
+                </div>
             <% } else { %>
-                <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+                    <p class="center-text">There are no images currently.</p>
             <% }; %>
-            <!-- end -->
-        <% }); %>
+            
+            <% if(totalPages > 1) { %>
+                <div class="pagination justify-center">
+                    <!-- previous -->
+                    <% if(page == 0) { %>
+                        <a class="m-r" href="">Previous</a>
+                    <% } else { %>
+                        <a class="m-r" href="/?page=<%=Number(page)-1%>">Previous</a>
+                    <% }; %>
+                
+                    <% for(let i = 0; i < totalPages; i++) { %>
+                        <a class="m-r" href="/?page=<%=i%>"><%=i%></a>
+                    <% }; %>
+                    
+                    <!-- next -->
+                    <% if(page == totalPages-1) { %>
+                        <a class="m-r" href="">Next</a>
+                    <% } else { %>
+                        <a class="m-r" href="/?page=<%=Number(page)+1%>">Next</a>
+                    <% }; %>
+                </div>
+            <% }; %>
+        </div>
     </div>
-<% } else { %>
-    <p>There are no images currently.</p>
-<% }; %>
-
-<% if(totalPages > 1) { %>
-    <% for(let i = 0; i < totalPages; i++) { %>
-        <a href="/?page=<%=i%>"><%=i%></a>
-    <% }; %>
-<% } %>
+</div>

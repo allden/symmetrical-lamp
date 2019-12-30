@@ -41,23 +41,23 @@ const checkAuth = (req, res, next) => {
 };
 
 // image
-router.post('/image/:id/update', imageController.imageUpdatePost);
-router.get('/image/:id/update', imageController.imageUpdate);
-router.post('/image/:id/unfavorite', imageController.imageUnfavorite);
-router.post('/image/:id/favorite', imageController.imageFavorite);
-router.post('/image/:id/comment', commentController.postComment);
-router.post('/image/:id/delete', imageController.imageDelete);
+router.post('/image/:id/update', checkAuth, imageController.imageUpdatePost);
+router.get('/image/:id/update', checkAuth, imageController.imageUpdate);
+router.post('/image/:id/unfavorite', checkAuth, imageController.imageUnfavorite);
+router.post('/image/:id/favorite', checkAuth, imageController.imageFavorite);
+router.post('/image/:id/comment', checkAuth, commentController.postComment);
+router.post('/image/:id/delete', checkAuth, imageController.imageDelete);
 router.get('/image/:id', imageController.imagePage);
 // user
 router.get('/user/:id/favorites', userController.userFavoritesPage);
 router.get('/user/:id', userController.userPage);
 // settings
-router.post('/settings/info', upload.single('profilePicture'), userController.settingsPageInfoPost);
-router.post('/settings/password', userController.settingsPagePasswordPost);
-router.get('/settings', userController.settingsPage);
+router.post('/settings/info', checkAuth, upload.single('profilePicture'), userController.settingsPageInfoPost);
+router.post('/settings/password', checkAuth, userController.settingsPagePasswordPost);
+router.get('/settings', checkAuth, userController.settingsPage);
 // tags
-router.post('/tags/create', tagController.tagsCreate);
-router.post('/tags/:id/delete', tagController.tagDelete);
+router.post('/tags/create', checkAuth, tagController.tagsCreate);
+router.post('/tags/:id/delete', checkAuth, tagController.tagDelete);
 router.get('/tags/:id', tagController.tagPage);
 router.get('/tags', tagController.tags);
 // search
@@ -72,7 +72,7 @@ router.post('/login', userController.loginPost);
 router.get('/logout', userController.logoutPage);
 // upload
 router.get('/upload', checkAuth, imageController.imageForm);
-router.post('/upload', upload.single('image'), imageController.imagePost);
+router.post('/upload', checkAuth, upload.single('image'), imageController.imagePost);
 // default
-router.get('/', userController.indexPage);
+router.get('/', imageController.indexPage);
 module.exports = router;

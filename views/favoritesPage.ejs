@@ -1,18 +1,56 @@
-<h1><%=user.username%>'s Favorites</h1>
-<div class="gallery">
-    <% images.forEach(function(image) { %>
-        <!-- nsfw/sfw block -->
-        <% if(image.nsfw) { %>
-            <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
-        <% } else { %>
-            <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+<!-- heading welcome -->
+<div class="box row height-limit">
+    <section class="top stretch m-b">
+        <div class="card column holder bg-dark stretch white-text">
+            <img class="profile-pic m-r" src="<%=pageUser.profilePicture%>">
+            <div class="info stretch overflow">
+                <h3 class="p-b-small grey-bottom-border stretch"><span class="primary-text"><%=pageUser.username%></span></h3>
+                <% if(pageUser.description) { %>
+                    <p>"<%=pageUser.description%>"</p>
+                <% }; %>
+            </div>
+        </div>
+    </section>
+    <main class="images holder bg-dark stretch white-text">
+        <a class="btn" href="<%=pageUser.url%>">Gallery</a>
+        <a class="btn current" href="<%=pageUser.favoritesUrl%>">Favorites</a>
+        <div class="gallery m-t">
+            <!-- image section -->
+            <% if(images.length > 0) { %>
+                <% images.forEach(function(image) { %>
+                    <!-- nsfw/sfw block -->
+                    <% if(image.nsfw) { %>
+                        <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
+                    <% } else { %>
+                        <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+                    <% }; %>
+                    <!-- end -->
+                <% }); %>
+            <% } else { %>
+                <p>This pageUser has no submissions.</p>
+            <% }; %>
+        </div>
+        <!-- pagination -->
+        <% if(pages > 1) { %>
+            <div class="pagination justify-center">
+                <!-- previous -->
+                <% if(page == 0) { %>
+                    <a class="m-r" href="">Previous</a>
+                <% } else { %>
+                    <a class="m-r" href="<%=pageUser.favoritesUrl%>/?page=<%=Number(page)-1%>">Previous</a>
+                <% }; %>
+            
+                <% for(let i = 0; i < pages; i++) { %>
+                    <a class="m-r" href="<%=pageUser.favoritesUrl%>/?page=<%=i%>"><%=i%></a>
+                <% }; %>
+                
+                <!-- next -->
+                <% if(page == pages-1) { %>
+                    <a class="m-r" href="">Next</a>
+                <% } else { %>
+                    <a class="m-r" href="<%=pageUser.favoritesUrl%>/?page=<%=Number(page)+1%>">Next</a>
+                <% }; %>
+            </div>
         <% }; %>
-        <!-- end -->
-    <% }); %>
+    </main>
 </div>
-
-<% if(pages > 1) { %>
-    <% for(let i = 0; i < pages; i++) { %>
-        <a href="<%=user.favoritesUrl%>/?page=<%=i%>"><%=i%></a>
-    <% }; %>
-<% }; %>

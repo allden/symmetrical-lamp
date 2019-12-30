@@ -1,51 +1,57 @@
 <!-- heading welcome -->
-<% if(user && user._id.toString() === pageUser._id.toString()) { %>
-    <h1>Welcome, <%= user.username %></h1>
-<% }; %>
-
-<h2>About</h2>
-<img src="<%=pageUser.profilePicture%>">
-<ul>
-    <li><%=pageUser.username%></li>
-    <% if(pageUser.description) { %>
-        <li><%=pageUser.description%></li>
-    <% }; %>
-</ul>
-<h2>Gallery</h2>
-<div class="gallery">
-    <!-- image section -->
-    <% if(images.length > 0) { %>
-        <% images.forEach(function(image) { %>
-            <!-- nsfw/sfw block -->
-            <% if(image.nsfw) { %>
-                <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
+<div class="box row stretch height-limit">
+    <section class="top stretch m-b">
+        <div class="card column holder bg-dark stretch white-text">
+            <img class="profile-pic m-r" src="<%=pageUser.profilePicture%>">
+            <div class="info stretch overflow">
+                <h3 class="p-b-small grey-bottom-border stretch"><span class="primary-text"><%=pageUser.username%></span></h3>
+                <% if(pageUser.description) { %>
+                    <p>"<%=pageUser.description%>"</p>
+                <% }; %>
+            </div>
+        </div>
+    </section>
+    <main class="images holder bg-dark stretch white-text">
+        <a class="btn current" href="<%=pageUser.url%>">Gallery</a>
+        <a class="btn" href="<%=pageUser.favoritesUrl%>">Favorites</a>
+        <div class="gallery m-t">
+            <!-- image section -->
+            <% if(images.length > 0) { %>
+                <% images.forEach(function(image) { %>
+                    <!-- nsfw/sfw block -->
+                    <% if(image.nsfw) { %>
+                        <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
+                    <% } else { %>
+                        <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+                    <% }; %>
+                    <!-- end -->
+                <% }); %>
             <% } else { %>
-                <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+                <p>This user has no submissions.</p>
             <% }; %>
-            <!-- end -->
-        <% }); %>
-    <% } else { %>
-        <p>This user has no submissions.</p>
-    <% }; %>
-</div>
-<% if(pages > 1) { %>
-    <% for(let i = 0; i < pages; i++) { %>
-        <a href="<%=pageUser.url%>/?page=<%=i%>"><%=i%></a>
-    <% }; %>
-<% }; %>
+        </div>
+        <!-- pagination -->
+        <% if(pages > 1) { %>
+            <div class="pagination justify-center">
+                <!-- previous -->
+                <% if(page == 0) { %>
+                    <a class="m-r" href="">Previous</a>
+                <% } else { %>
+                    <a class="m-r" href="<%=pageUser.url%>/?page=<%=Number(page)-1%>">Previous</a>
+                <% }; %>
+            
+                <% for(let i = 0; i < pages; i++) { %>
+                    <a class="m-r" href="<%=pageUser.url%>/?page=<%=i%>"><%=i%></a>
+                <% }; %>
+                
+                <!-- next -->
+                <% if(page == pages-1) { %>
+                    <a class="m-r" href="">Next</a>
+                <% } else { %>
+                    <a class="m-r" href="<%=pageUser.url%>/?page=<%=Number(page)+1%>">Next</a>
+                <% }; %>
+            </div>
+        <% }; %>
+    </main>
 
-<h2>Favorites</h2>
-<div class="favorites">
-    <% if(favorites.length > 0) { %>
-        <% favorites.forEach(function(image) { %>
-            <% if(image.nsfw) { %>
-                <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
-            <% } else { %>
-                <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
-            <% }; %>
-        <% }); %>
-    <% } else { %>
-        <p>No favorites to display.</p>
-    <% }; %>
 </div>
-<a href="<%=pageUser.favoritesUrl%>">Show All</a>

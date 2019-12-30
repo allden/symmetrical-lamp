@@ -1,32 +1,27 @@
 <!-- tags -->
-<h2>Available Tags</h2>
-<ul>
-<% tags.forEach(function(tag) { %>
-    <li class="select" value="<%=tag._id%>"><%=tag.name%></li>
-<% }); %>
-</ul>
-<h2>Selected Tags</h2>
-<ul class="selected">
-    <% image.tags.forEach(function(imageTag) { %>
-        <li class="deselect selected-tag" value="<%=imageTag._id%>"><%=imageTag.name%></li>
-    <% }); %>
-</ul>
-<form action="<%=image.updateUrl%>" method="POST">
-    <input type="hidden" name="tags" id="tags">
-    <button>Update</button>
-</form>
-<!-- image -->
-<h2><%=image.title%></h2>
-<img src="<%=image.path%>">
-<% if(user) { %>
-    <% if(image.favorites.includes(user._id)) { %>
-        <form action="<%=image.unfavoriteUrl%>" method="POST">
-            <button>Unfavorite</button>
-        </form>    
-    <% } else { %>
-        <form action="<%=image.favoriteUrl%>" method="POST">
-            <button>Favorite</button>
+<%- include('./errorHandling/messages'); %>
+<div class="column height-limit">
+    <div class="left-half holder overflow">
+        <h3>Available Tags</h3>
+        <ul class="five-col-grid">
+        <% tags.forEach(function(tag) { %>
+            <li class="btn select grid-item" value="<%=tag._id%>"><%=tag.name%></li>
+        <% }); %>
+        </ul>
+        <h3>Selected Tags</h3>
+        <ul class="selected five-col-grid">
+            <% image.tags.forEach(function(imageTag) { %>
+                <li class="deselect selected-tag" value="<%=imageTag._id%>"><%=imageTag.name%></li>
+            <% }); %>
+        </ul>
+        <form action="<%=image.updateUrl%>" method="POST">
+            <input type="hidden" name="tags" id="tags">
+            <button class="btn-dark stretch">Update</button>
         </form>
-    <% }; %>
-<% }; %>
+    </div>
+    <!-- image -->
+    <div class="right-half holder">
+        <img src="<%=image.path%>">
+    </div>
+</div>
 <script src="/scripts/tagFunctionality.js"></script>

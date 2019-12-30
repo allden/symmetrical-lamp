@@ -12,17 +12,16 @@ module.exports.registrationForm = (req, res) => {
         username: '',
         password: '',
         password2: '',
-        age: '',
         email: ''
     });
 };
 
 module.exports.registrationPost = (req, res) => {
-    let { username, password, password2, age, email } = req.body;
+    let { username, password, password2, email } = req.body;
     let errors = [];
 
     // validation
-    if(!username || !password || !password2 || !age || !email) {
+    if(!username || !password || !password2 || !email) {
         errors.push('Please fill in all fields.');
     };
 
@@ -41,10 +40,6 @@ module.exports.registrationPost = (req, res) => {
     if(password !== password2) {
         errors.push('Passwords must match.');
     };
-
-    if(age < 13) {
-        errors.push('You must be 13 or older to register.');
-    };
     
     User.find({username})
     .then(foundUsers => {
@@ -55,9 +50,9 @@ module.exports.registrationPost = (req, res) => {
             // if errors exist, then return us back to the register Form with the values we've entered
             if(errors.length > 0) {
                 req.flash('error', errors);
-                reRender(req, res, username, password, password2, age, email);
+                reRender(req, res, username, password, password2, email);
             } else {
-                genUser(req, res, username, password, age, email);
+                genUser(req, res, username, password, email);
             };
         })
         .catch(err => console.error(err));
@@ -74,26 +69,6 @@ module.exports.loginPost = passport.authenticate('local', { successRedirect: '/'
                                                             failureFlash: true,
                                                             successFlash: 'You have successfully logged in!'});
 
-module.exports.indexPage = (req, res) => {
-    let limiter = 9;
-    let page = req.query.page;
-    
-    Image.find({})
-    .then(allImages => {
-        let totalPages = Math.ceil(allImages.length / limiter);
-        Image.find({})
-        .sort({uploaded: 'desc'})
-        .limit(limiter)
-        .skip(limiter*page)
-        .exec()
-        .then(images => {
-            res.render('index', { images, totalPages });
-        })
-        .catch(err => console.error(err));
-    })
-    .catch(err => console.error(err));
-};
-
 module.exports.logoutPage = (req, res) => {
     req.flash('success', 'You have successfully logged out.');
     req.logout();
@@ -102,26 +77,21 @@ module.exports.logoutPage = (req, res) => {
 
 module.exports.userPage = (req, res) => {
     let id = req.params.id;
-    let page = req.query.page;
+    let page = req.query.page || 0;
     let limiter = 9;
 
     User.findById(id)
     .then(user => {
-        Image.find({favorites: user._id})
-        .sort({uploaded: 'desc'})
-        .then(favorites => {
+        Image.find({creator: user._id})
+        .then(createdByUser => {
+            let pages = Math.ceil(createdByUser.length / limiter);
             Image.find({creator: user._id})
-            .then(createdByUser => {
-                let pages = Math.ceil(createdByUser.length / limiter);
-                Image.find({creator: user._id})
-                .limit(limiter)
-                .skip(limiter * page)
-                .sort({uploaded: 'desc'})
-                .exec()
-                .then(images => {
-                    res.render('userPage', {pageUser: user, images, favorites, pages});
-                })
-                .catch(err => console.error(err));
+            .limit(limiter)
+            .skip(limiter * page)
+            .sort({uploaded: 'desc'})
+            .exec()
+            .then(images => {
+                res.render('userPage', {pageUser: user, images, pages, page});
             })
             .catch(err => console.error(err));
         })
@@ -132,7 +102,7 @@ module.exports.userPage = (req, res) => {
 
 module.exports.userFavoritesPage = (req, res) => {
     let id = req.params.id;
-    let page = req.query.page;
+    let page = req.query.page || 0;
     let limiter = 9;
 
     Image.find({favorites: id})
@@ -145,7 +115,7 @@ module.exports.userFavoritesPage = (req, res) => {
             .skip(limiter * page)
             .sort({uploaded: 'desc'})
             .then(images => {
-                res.render('favoritesPage', {images, user, pages});
+                res.render('favoritesPage', {images, pageUser:user, pages, page});
             })
             .catch(err => console.error(err));
         })
@@ -215,19 +185,18 @@ module.exports.settingsPagePasswordPost = (req, res) => {
     };
 };
 
-let reRender = (req, res, username, password, password2, age, email) => {
+let reRender = (req, res, username, password, password2, email) => {
     res.render('register', {
         errMsg: req.flash('error'),
         successMsg: req.flash('success'),
         username,
         password,
         password2,
-        age,
         email
     });
 };
 
-let genUser = (req, res, username, password, age, email) => {
+let genUser = (req, res, username, password, email) => {
     bcrypt.genSalt(10)
     .then(salt => {
         bcrypt.hash(password, salt)
@@ -235,7 +204,6 @@ let genUser = (req, res, username, password, age, email) => {
             let newUser = new User({
                 username,
                 password: hash,
-                age,
                 email
             }).save()
             .then(() => {

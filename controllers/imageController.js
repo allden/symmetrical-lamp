@@ -6,6 +6,7 @@ const fs = require('fs');
 
 module.exports.imageForm = (req, res) => {
     Tag.find({})
+    .sort({name: 1})
     .then((tags) => {
         res.render('imageForm', {nsfw: false, title: '', tags});
     })
@@ -19,7 +20,9 @@ module.exports.imagePost = (req, res) => {
         let formTags = req.body.tags;
         nsfw === 'true' ? nsfw = true : nsfw = false;
         formTags = formTags.split(', ');
-        let path = '/' + req.file.path.split('/').slice(1).join('/') || false;
+        let path = '';
+        if(req.file) { path = '/' + req.file.path.split('/').slice(1).join('/'); }
+
         let errors = []
     
         if(!req.file) {
@@ -32,6 +35,10 @@ module.exports.imagePost = (req, res) => {
         
         if(/^[A-Za-z0-9:\s!?.,]+$/.test(title) === false) {
             errors.push('Please make sure the title only consists of alphanumeric characters and punctuation.');
+        };
+
+        if(formTags[0] === '') {
+            errors.push('Please include at least one tag.');
         };
         
         if(errors.length > 0) {
@@ -56,16 +63,22 @@ module.exports.imagePost = (req, res) => {
 
 module.exports.imagePage = (req, res) => {
     let id = req.params.id;
-    Image.findById(id)
-    .populate('creator')
-    .populate('tags')
-    .exec()
-    .then(image => {
-        Comment.find({location: image._id})
+    Image.findByIdAndUpdate(id, {$inc: {views: 1}})
+    .then(() => {
+        Image.findById(id)
         .populate('creator')
+        .populate('tags')
+        .sort({tags: 1})
         .exec()
-        .then(comments => {
-            res.render('imagePage', {errMsg: req.flash('error'), image, comments});
+        .then(image => {
+            Comment.find({location: image._id})
+            .populate('creator')
+            .sort({created: -1})
+            .exec()
+            .then(comments => {
+                res.render('imagePage', {errMsg: req.flash('error'), image, comments});
+            })
+            .catch(err => console.error(err));
         })
         .catch(err => console.error(err));
     })
@@ -93,9 +106,11 @@ module.exports.imageUpdate = (req, res) => {
     let id = req.params.id;
 
     Tag.find({})
+    .sort({name: 1})
     .then(tags => {
         Image.findById(id)
         .populate('tags')
+        .sort({tags: 1})
         .exec()
         .then(image => {
             res.render('imageUpdate', {tags, image});
@@ -108,6 +123,11 @@ module.exports.imageUpdate = (req, res) => {
 module.exports.imageUpdatePost = (req, res) => {
     let id = req.params.id;
     let tags = req.body.tags.split(', ');
+
+    if(tags[0] == '') {
+        req.flash('error', 'Please include at least one tag.');
+        res.redirect('');
+    };
 
     Image.findByIdAndUpdate(id, {tags})
     .then((image) => {
@@ -138,10 +158,27 @@ module.exports.imageUnfavorite = (req, res) => {
     })
 };
 
-module.exports.searchByTags = (req, res) => {
-    let searchParams = req.body.search.split(', ');
-    let tags = [];
-    searchParams.forEach(param => {
-        
+module.exports.indexPage = (req, res) => {
+    let limiter = 9;
+    let page = req.query.page || 0;
+    
+    Tag.find({})
+    .sort({name: 1})
+    .then(tags => {
+        Image.find({})
+        .then(allImages => {
+            let totalPages = Math.ceil(allImages.length / limiter);
+            Image.find({})
+            .sort({uploaded: 'desc'})
+            .limit(limiter)
+            .skip(limiter*page)
+            .exec()
+            .then(images => {
+                res.render('index', { images, totalPages, tags, page });
+            })
+            .catch(err => console.error(err));
+        })
+        .catch(err => console.error(err));
     })
-}
+    .catch(err => console.error(err));
+};

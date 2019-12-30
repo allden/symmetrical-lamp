@@ -1,65 +1,80 @@
-<%- include('./errorHandling/messages'); %>
-<!-- image info -->
-<ul>
-    <li>Uploaded by: <a href="<%=image.creator.url%>"><%=image.creator.username%></a></li>
-    <li>Posted at: <%=image.formatDate%></li>
-    <li>Views: <%=image.views%></li>
-    <li>Favorites: <%=image.favorites.length%></li>
-    <li>Tags: 
-        <ul>
-            <% if(image.tags.length > 0) { %>
-                <% image.tags.forEach(function(tag) { %>
-                    <a href="<%=tag.url%>"><li><%=tag.name%></li></a>
+<div class="box row">
+    <%- include('./errorHandling/messages'); %>
+    <div class="column align-top stretch m-b">
+        <div class="left row">
+            <div class="btns stretch center-text">
+                <% if(user) { %> 
+                    <% if(image.favorites.includes(user._id)) { %>
+                        <form action="<%=image.unfavoriteUrl%>" method="POST">
+                            <button class="btn nom stretch">Unfavorite</button>
+                        </form>    
+                    <% } else { %>
+                        <form action="<%=image.favoriteUrl%>" method="POST">
+                            <button class="btn nom stretch">Favorite</button>
+                        </form>
+                    <% }; %>
+                    <% if(user.admin || user.username === image.creator.username) { %>
+                        <a class="btn stretch" href="<%=image.updateUrl%>">Edit</a>
+                        <form action="<%=image.deleteUrl%>" method="POST">
+                            <button class="btn stretch">Delete</button>
+                        </form>
+                    <% }; %>
+                <% }; %>
+            </div>
+            <!-- image info -->
+            <ul>
+                <li>Title: <%=image.title%></li>
+                <li>Uploaded by: <a href="<%=image.creator.url%>"><%=image.creator.username%></a></li>
+                <li>Posted at: <br><%=image.formatDate%></li>
+                <li>Views: <%=image.views%></li>
+                <li>Favorites: <%=image.favorites.length%></li>
+                <li>Tags: 
+                    <ul class="m-l">
+                        <% if(image.tags.length > 0) { %>
+                            <% image.tags.forEach(function(tag) { %>
+                                <a href="<%=tag.url%>"><li><%=tag.name%></li></a>
+                            <% }); %>
+                        <% } else { %>
+                            <li>No tags to display.</li>
+                        <% }; %>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="right">
+            <!-- image -->
+            <img src="<%=image.path%>">
+        </div>
+    </div>
+    
+    <!-- actions -->
+    <!-- comments -->
+    <% if(user) { %>
+        <div class="comment-section row stretch m-b">
+            <form class="stretch row" action="<%=image.commentUrl%>" method="POST">
+                <textarea class="stretch nom" name="content" id="content" placeholder="Enter a comment."></textarea>
+                <button class="btn nom">Submit</button>
+            </form>
+        </div>
+    <% }; %>        
+
+    <div class="white-text stretch">
+        <div class="comments bg-dark stretch p">
+            <% if(comments.length > 0) { %>
+                <% comments.forEach(function(comment) { %>
+                    <div class="comment">
+                        <ul>
+                            <div class="info column space-between">
+                                <li><a href="<%=comment.creator.url%>"><%= comment.creator.username %></a></li>
+                                <li class="opaque"><%= comment.formatDate %></li>
+                            </div>
+                            <li><%= comment.content %></li>
+                        </ul>
+                    </div>
                 <% }); %>
             <% } else { %>
-                <li>No tags to display.</li>
+                <p>No comments have been made yet.</p>
             <% }; %>
-        </ul>
-    </li>
-</ul>
-
-<!-- actions -->
-<% if(user) { %>
-    <% if(user.admin || user.username === image.creator.username) { %>
-        <form action="<%=image.deleteUrl%>" method="POST">
-            <button>Delete</button>
-        </form>
-        <a href="<%=image.updateUrl%>">Edit</a>
-    <% }; %>
-<% }; %>
-<!-- image -->
-<h2><%=image.title%></h2>
-<img src="<%=image.path%>">
-<% if(user) { %>
-    <% if(image.favorites.includes(user._id)) { %>
-        <form action="<%=image.unfavoriteUrl%>" method="POST">
-            <button>Unfavorite</button>
-        </form>    
-    <% } else { %>
-        <form action="<%=image.favoriteUrl%>" method="POST">
-            <button>Favorite</button>
-        </form>
-    <% }; %>
-<% }; %>
-<!-- comments -->
-<h2>Comments</h2>
-<% if(user) { %>
-    <form action="<%=image.commentUrl%>" method="POST">
-        <textarea name="content" id="content" placeholder="Enter a comment."></textarea>
-        <button>Submit</button>
-    </form>
-<% } else { %>
-    <p>You need to be logged in to submit comments.</p>
-<% }; %>
-
-<% if(comments.length > 0) { %>
-    <% comments.forEach(function(comment) { %>
-        <ul>
-            <li><a href="<%=comment.creator.url%>"><%= comment.creator.username %></a></li>
-            <li><%= comment.formatDate %></li>
-            <li><%= comment.content %></li>
-        </ul>
-    <% }); %>
-<% } else { %>
-    <p>No comments have been made yet.</p>
-<% }; %>
+        </div>
+    </div>
+</div>

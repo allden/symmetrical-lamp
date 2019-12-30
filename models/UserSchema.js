@@ -16,11 +16,6 @@ const UserSchema = new Schema({
         type: String, 
         required: true
     },
-    age: {
-        type: Number, 
-        min: 13, 
-        required: true
-    },
     description: {
         type: String,
         default: 'No description set yet.'

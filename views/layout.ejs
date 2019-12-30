@@ -4,23 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="/styles/style.css">
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/utility.css">
     <title>Image Emporium</title>
 </head>
 <body>
-    <% if(user) { %>
-        <a href="/">Home</a>
-        <a href="<%=user.url%>">Profile</a>
-        <a href="/tags">Tags</a>
-        <a href="/upload">Upload</a>
-        <a href="/settings">Account Settings</a>
-        <a href="/logout">Log Out</a>
-    <%} else { %>
-        <a href="/">Home</a>
-        <a href="/tags">Tags</a>
-        <a href="/login">Log In</a>
-        <a href="/register">Register</a>
-    <% }; %>
+    <nav class="navbar justify-right">
+        <% if(user) { %>
+            <div class="nav-item column">
+                <a class="btn menu-btn" href="/">Home</a>
+                <a class="btn menu-btn" href="<%=user.url%>">Profile</a>
+                <a class="btn menu-btn" href="/tags">Tags</a>
+                <a class="btn menu-btn" href="/upload">Upload</a>
+                <a class="btn menu-btn" href="/settings">Account Settings</a>
+                <a class="btn menu-btn" href="/logout">Log Out</a>
+            </div>
+        <%} else { %>
+            <div class="nav-item column">
+                <a class="btn menu-btn" href="/">Home</a></li>
+                <a class="btn menu-btn" href="/tags">Tags</a></li>
+                <a class="btn menu-btn" href="/login">Log In</a></li>
+                <a class="btn menu-btn" href="/register">Register</a></li>
+            </div>
+        <% }; %>
+    </nav>
     <%- body %>
+    <footer class="foobar justify-center white-text">
+        <p>I do not own any of the images on this website and it was created purely for educational purposes.</p>
+    </footer>
 </body>
 </html>

@@ -1,11 +1,15 @@
 <% if(errMsg) { %>
     <% errMsg.forEach(function(msg) { %>
-        <p><%= msg %></p>
+        <div class="center-text warn message">
+            <p><%= msg %></p>
+        </div>
     <% }); %>
 <% }; %>
 
 <% if(successMsg) { %>
     <% successMsg.forEach(function(msg) { %>
-        <p><%= msg %></p>
+        <div class="center-text success message">
+            <p><%= msg %></p>
+        </div>
     <% }); %>
 <% }; %>

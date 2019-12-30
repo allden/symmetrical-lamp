@@ -13,9 +13,29 @@ module.exports.tagDelete = (req, res) => {
     let id = req.params.id;
 
     Tag.findByIdAndDelete(id)
-    .then(() => {
-        req.flash('success', 'Successfully deleted.');
-        res.redirect('/tags');
+    .then((tag) => {
+        Image.find({tags: tag._id})
+        .then(images => {
+            let deleteAllInstances = new Promise((resolve, reject) => {
+                let existing = [];
+                for(let i = 0; i < images.length; i++) {
+                    existing.push(images[i]._id);
+                };
+    
+                existing.forEach(imgId => {
+                    Image.findByIdAndUpdate(imgId, {tags: {$pull: {tags: tag._id}}});
+                });
+
+                resolve();
+            });
+
+            deleteAllInstances.then(() => {
+                req.flash('success', 'Successfully deleted.');
+                res.redirect('/tags');
+            })
+            .catch(err => console.error(err));
+        })
+        .catch(err => console.error(err));
     })
     .catch(err => console.error(err));
 };
@@ -28,7 +48,7 @@ module.exports.tagsCreate = (req, res) => {
         res.redirect('/tags');
     };
 
-    if(!tags) {
+    if(tags[0] == '') {
         req.flash('error', 'Tags must not be empty.');
         res.redirect('/tags');
     };
@@ -38,7 +58,7 @@ module.exports.tagsCreate = (req, res) => {
     let tagFunc = new Promise((resolve, reject) => {
         for(let i = 0; i < tags.length; i++) {
             let tag = tags[i].replace(' ', '_');
-            Tag.findOneAndUpdate({ name: tag }, { name: tag }, { upsert: true })
+            Tag.findOneAndUpdate({ name: tag }, { name: tag, created: new Date() }, { upsert: true })
             .then(doc => console.log(doc))
             .catch(err => console.error(err));
             if(i === tags.length-1) resolve();
@@ -54,14 +74,23 @@ module.exports.tagsCreate = (req, res) => {
 
 module.exports.tagPage = (req, res) => {
     let id = req.params.id;
+    let page = req.query.page || 0;
+    let limiter = 9;
 
     Tag.find({})
     .then(tags => {
         Tag.findById(id)
         .then(tag => {
             Image.find({tags: tag._id})
-            .then(images => {
-                res.render('tagPage', {images, tags, tag});
+            .then(allImages => {
+                let totalPages = Math.ceil(allImages.length / limiter);
+                Image.find({tags: tag._id})
+                .limit(limiter)
+                .skip(limiter * page)
+                .then(images => {
+                    res.render('index', {images, tags, totalPages, page});
+                })
+                .catch(err => console.error(err));
             })
             .catch(err => console.error(err));
         })
@@ -92,14 +121,18 @@ module.exports.searchByTags = (req, res) => {
     searchIteration.then(() => {
         let limiter = 9;
         let page = req.query.page;
-        Image.find({tags: tagsMatched})
-        .then(allImages => {
-            let totalPages = allImages.length / limiter;
+        Tag.find({})
+        .then(tags => {
             Image.find({tags: {$all: tagsMatched}})
-            .limit(limiter)
-            .skip(limiter * page)
-            .then(images => {
-                res.render('index', {images, totalPages});
+            .then(allImages => {
+                let totalPages = allImages.length / limiter;
+                Image.find({tags: {$all: tagsMatched}})
+                .limit(limiter)
+                .skip(limiter * page)
+                .then(images => {
+                    res.render('index', {images, totalPages, tags, page});
+                })
+                .catch(err => console.error(err));
             })
             .catch(err => console.error(err));
         })

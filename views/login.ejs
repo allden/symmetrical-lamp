@@ -1,9 +1,15 @@
-<%- include('./errorHandling/messages'); %>
-<form action="/login" method="POST">
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username" placeholder="Please enter your username.">
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" placeholder="Please enter your password.">
-    <button>Login</button>
-</form>
-<a href="/register">Don't have an account?</a>
+<div class="center height-limit">
+    <div class="box-l">
+        <%- include('./errorHandling/messages'); %>
+        <form class="row" action="/login" method="POST">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" placeholder="Please enter your username.">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" placeholder="Please enter your password.">
+            <button class="btn">Login</button>
+        </form>
+        <div class="center-text">
+            <a href="/register">Don't have an account?</a>
+        </div>
+    </div>
+</div>

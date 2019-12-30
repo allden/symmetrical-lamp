@@ -1,27 +1,34 @@
-<%- include('./errorHandling/messages'); %>
 <% let isAdmin = false %>
-<% if(user) { %>
-    <% if(user.admin) { %>
-        <% isAdmin = true %>
-        <form action="/tags/create" method="POST">
-            <label for="tags">Tags</label>
-            <input type="text" name="tags" id="tags" placeholder="Enter tags separated by commas. Ex. black_hair, blue_eyes">
-            <button>Create</button>
-        </form>
-    <% } %>
-<% }; %>
-
-<% if(tags.length > 0) { %>
-    <ul>
-        <% tags.forEach(function(tag) { %>
-            <a href="<%=tag.url%>"><li><%=tag.name%></li></a>
-            <% if(isAdmin) { %>
-                <form action="<%=tag.deleteUrl%>" method="POST">
-                    <button>Delete</button>
-                </form>
-            <% } %>
-        <% }); %>
-    </ul>
-<% } else { %>
-    <p>No tags to display.</p>
-<% }; %>
+<div class="box row align-center">
+    <%- include('./errorHandling/messages'); %>
+    <% if(user) { %>
+        <% if(user.admin) { %>
+            <% isAdmin = true %>
+            <form action="/tags/create" method="POST">
+                <label for="tags">Tags</label>
+                <input type="text" name="tags" id="tags" placeholder="Enter tags separated by commas. Ex. black_hair, blue_eyes">
+                <button class="btn">Create</button>
+            </form>
+        <% } %>
+    <% }; %>
+    
+    <% if(tags.length > 0) { %>
+        <div class="list row align-center">
+            <% tags.forEach(function(tag) { %>
+                <div class="list-item column align-center">
+                    <a href="<%=tag.url%>"><%=tag.name%></a>
+                    <div class="end column align-center">
+                        <p class="white-text opaque"><%=tag.formatDate%></p>
+                        <% if(isAdmin) { %>
+                            <form action="<%=tag.deleteUrl%>" method="POST">
+                                <button class="btn">Delete</button>
+                            </form>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <p>No tags to display.</p>
+    <% }; %>
+</div>

@@ -1,15 +1,19 @@
-<%- include('./errorHandling/messages'); %>
-<form action="/register" method="POST">
-    <label for="username">Username</label>
-    <input type="text" name="username" id="username" placeholder="Please enter a username. This will be visible to everyone. Ex. johndoe47" value="<%= username ? username : ''%>">
-    <label for="password">Password</label>
-    <input type="password" name="password" id="password" placeholder="Please enter a password." value="<%= password ? password : '' %>">
-    <label for="password2">Confirm password</label>
-    <input type="password" name="password2" id="password2" placeholder="Please enter your password again." value="<%= password2 ? password2 : '' %>">
-    <label for="age">Age</label>
-    <input type="number" name="age" id="age" placeholder="Please enter your age." value="<%= age ? age : '' %>">
-    <label for="email">Email</label>
-    <input type="email" name="email" id="email" placeholder="Please enter your email. Ex. johndoe@myemail.com" value="<%= email ? email : '' %>">
-    <button>Register</button>
-</form>
-<a href="/login">Already registered?</a>
+<div class="center height-limit">
+    <div class="box-l">
+        <%- include('./errorHandling/messages'); %>
+        <form class="row" action="/register" method="POST">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" placeholder="Please enter a username. This will be visible to everyone. Ex. johndoe47" value="<%= username ? username : ''%>">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" placeholder="Please enter a password." value="<%= password ? password : '' %>">
+            <label for="password2">Confirm password</label>
+            <input type="password" name="password2" id="password2" placeholder="Please enter your password again." value="<%= password2 ? password2 : '' %>">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" placeholder="Please enter your email. Ex. johndoe@myemail.com" value="<%= email ? email : '' %>">
+            <button class="btn">Register</button>
+        </form>
+        <div class="center-text">
+            <a href="/login">Already registered?</a>
+        </div>
+    </div>
+</div>

@@ -1,18 +1,30 @@
-<%- include('./errorHandling/messages'); %>
-<h1>Account Settings</h1>
-<h2>Info:</h2>
-<form action="/settings/info" method="POST" enctype="multipart/form-data">
-    <label for="profile">Profile Picture</label>
-    <input type="file" id="profile" name="profilePicture">
-    <label for="description">Description</label>
-    <textarea id="description" name="description"></textarea>
-    <button>Change Info</button>
-</form>
-<h2>Change Password:</h2>
-<form action="/settings/password" method="POST">
-    <label for="password">Password</label>
-    <input type="password" id="password" name="password">
-    <label for="password2">Confirm Password</label>
-    <input type="password" id="password2" name="password2">
-    <button>Change Password</button>
-</form>
+<div class="stretch center height-limit">
+    <div class="box-l center row">
+        <%- include('./errorHandling/messages'); %>
+        <h1>Account Settings</h1>
+        <h3>Info:</h3>
+        <form class="stretch" action="/settings/info" method="POST" enctype="multipart/form-data">
+            <div class="form-item row stretch">
+                <label for="profile">Profile Picture</label>
+                <input type="file" id="profile" name="profilePicture">
+            </div>
+            <div class="form-item row stretch">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" placeholder="Leave blank for previous value."></textarea>
+            </div>
+            <button class="btn stretch">Change Info</button>
+        </form>
+        <h3>Change Password:</h3>
+        <form class="stretch" action="/settings/password" method="POST">
+            <div class="form-item row stretch">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Please enter a password. Must be greater than 5 characters.">
+            </div>
+            <div class="form-item row stretch">
+                <label for="password2">Confirm Password</label>
+                <input type="password" id="password2" name="password2" placeholder="Please enter your password again.">
+            </div>
+            <button class="btn stretch">Change Password</button>
+        </form>
+    </div>
+</div>

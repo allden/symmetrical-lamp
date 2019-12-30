@@ -1,28 +1,36 @@
-<%- include('./errorHandling/messages'); %>
-<h2>Available Tags</h2>
-<ul>
-<% tags.forEach(function(tag) { %>
-    <li class="select" value="<%=tag._id%>"><%=tag.name%></li>
-<% }); %>
-</ul>
-<h2>Selected Tags</h2>
-<ul class="selected"></ul>
-</ul>
-<form action="/upload" method="POST" enctype="multipart/form-data">
-    <label for="title">Title</label>
-    <input type="text" name="title" id="title" placeholder="Enter a title." value="<%= title !== '' ? title : ''%>">
-    <label for="image">Image</label>
-    <input type="file" name="image">
-    <input type="hidden" name="tags" id="tags">
-    <label>Is this adult content?</label>
-    <% if(nsfw===false) { %>
-        <input type="radio" name="nsfw" value="true">Yes
-        <input type="radio" name="nsfw" value="false" checked>No
-    <% } else { %>
-        <input type="radio" name="nsfw" value="true" checked>Yes
-        <input type="radio" name="nsfw" value="false">No
-    <% }; %>
-    <button>Submit</button>
-</form>
-<a href="/">Go Back</a>
+<div class="box center row white-text height-limit">
+    <div class="holder bg-dark">
+        <%- include('./errorHandling/messages'); %>
+        <h3>Available Tags</h3>
+        <ul class="five-col-grid center-text">
+        <% tags.forEach(function(tag) { %>
+            <li class="select grid-item btn white-text" value="<%=tag._id%>"><%=tag.name%></li>
+        <% }); %>
+        </ul>
+        <h3>Selected Tags</h3>
+        <ul class="selected five-col-grid center-text"></ul>
+        </ul>
+        <form class="row" action="/upload" method="POST" enctype="multipart/form-data">
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" placeholder="Enter a title." value="<%= title !== '' ? title : ''%>">
+            <label for="image">Image</label>
+            <input type="file" name="image">
+            <input type="hidden" name="tags" id="tags">
+            <label>Is this adult content?</label>
+            <div class="radio">
+                <% if(nsfw===false) { %>
+                    <input type="radio" name="nsfw" value="true"> Yes
+                    <input type="radio" name="nsfw" value="false" checked> No
+                <% } else { %>
+                    <input type="radio" name="nsfw" value="true" checked> Yes
+                    <input type="radio" name="nsfw" value="false"> No
+                <% }; %>
+            </div>
+            <button class="btn">Submit</button>
+        </form>
+        <div class="center-text">
+            <a href="/">Go Back</a>
+        </div>
+    </div>
+</div>
 <script src="/scripts/tagFunctionality.js"></script>
