@@ -3,10 +3,10 @@ const multer = require('multer');
 const path = require('path');
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, './public/images');
+        return cb(null, './public/images');
     },
     filename: function(req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
+        return cb(null, Date.now() + path.extname(file.originalname));
     }
 });
 
@@ -36,7 +36,7 @@ const checkAuth = (req, res, next) => {
         next();
     } else {
         req.flash('error', 'Please login to view this page.');
-        res.redirect('/login');
+        return res.redirect('/login');
     };
 };
 
@@ -76,6 +76,6 @@ router.post('/upload', checkAuth, upload.single('image'), imageController.imageP
 // default
 router.get('/', imageController.indexPage);
 router.get('*', (req, res) => {
-    res.render('404');
+    return res.render('404');
 });
 module.exports = router;

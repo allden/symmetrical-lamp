@@ -24,7 +24,7 @@ TagSchema
 TagSchema
 .virtual('formatDate')
 .get(function() {
-    return this.created.toUTCString();
+    return this.created.toLocaleString();
 });
 
 module.exports = mongoose.model('Tag', TagSchema);

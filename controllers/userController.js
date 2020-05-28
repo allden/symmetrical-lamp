@@ -4,7 +4,7 @@ const passport = require('passport');
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
-
+const sharp = require('sharp');
 
 // need to include errMsg and successMsg on every render
 module.exports.registrationForm = (req, res) => {
@@ -55,9 +55,9 @@ module.exports.registrationPost = (req, res) => {
                 genUser(req, res, username, password, email);
             };
         })
-        .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.loginForm = (req, res) => {
@@ -72,7 +72,7 @@ module.exports.loginPost = passport.authenticate('local', { successRedirect: '/'
 module.exports.logoutPage = (req, res) => {
     req.flash('success', 'You have successfully logged out.');
     req.logout();
-    res.redirect('/');
+    return res.redirect('/');
 };
 
 module.exports.userPage = (req, res) => {
@@ -80,8 +80,16 @@ module.exports.userPage = (req, res) => {
     let page = req.query.page || 0;
     let limiter = 9;
 
+    if(id.length !== 24) {
+        return res.render('404');
+    };
+
     User.findById(id)
     .then(user => {
+        if(!user) {
+            return res.render('404');
+        };
+
         Image.find({creator: user._id})
         .then(createdByUser => {
             let pages = Math.ceil(createdByUser.length / limiter);
@@ -93,11 +101,11 @@ module.exports.userPage = (req, res) => {
             .then(images => {
                 res.render('userPage', {pageUser: user, images, pages, page});
             })
-            .catch(err => console.error(err));
+            .catch(err => errorHandling(err));
         })
-        .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.userFavoritesPage = (req, res) => {
@@ -115,13 +123,13 @@ module.exports.userFavoritesPage = (req, res) => {
             .skip(limiter * page)
             .sort({uploaded: 'desc'})
             .then(images => {
-                res.render('favoritesPage', {images, pageUser:user, pages, page});
+                return res.render('favoritesPage', {images, pageUser:user, pages, page});
             })
-            .catch(err => console.error(err));
+            .catch(err => errorHandling(err));
         })
-        .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.settingsPage = (req, res) => {
@@ -131,26 +139,34 @@ module.exports.settingsPage = (req, res) => {
 module.exports.settingsPageInfoPost = (req, res) => {
     let description = req.body.description || req.user.description;
     let profilePicture = req.file;
-    console.log(profilePicture, description);
+    
     if(profilePicture) {
-        profilePicture = '/' + profilePicture.path.split('/').slice(1).join('/');
+        let profilePicturePath = profilePicture.path.replace(/\\/g, '/');
+        profilePicture = '/' + profilePicturePath.split('/').slice(1).join('/');
         if(req.user.profilePicture !== '/images/default.png') {
             fs.unlink(path.join(__dirname, '..', 'public', req.user.profilePicture), err => {
-                if(err) throw err;
+                if(err) errorHandling(err);
+                const pfpDest = path.join(__dirname, '..', 'public', 'images', req.file.filename);
+                
+                sharp(req.file.path)
+                .resize(300)
+                .toBuffer((err, buffer) => {
+                    fs.writeFile(pfpDest, buffer, err => {
+                        if(err) errorHandling(err);
+                    });
+                });
             });
         };
     } else {
         profilePicture = req.user.profilePicture;
     };
-    console.log(profilePicture, description);
 
     User.findByIdAndUpdate(req.user.id, { description, profilePicture })
     .then((user) => {
-        console.log(user);
         req.flash('success', 'Successfully updated.');
-        res.redirect('/settings');
+        return res.redirect('/settings');
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.settingsPagePasswordPost = (req, res) => {
@@ -166,7 +182,7 @@ module.exports.settingsPagePasswordPost = (req, res) => {
 
     if(errors.length > 0) {
         req.flash('error', errors);
-        res.redirect('/settings');
+        return res.redirect('/settings');
     } else {
         bcrypt.genSalt(10)
         .then(salt => {
@@ -175,13 +191,13 @@ module.exports.settingsPagePasswordPost = (req, res) => {
                 User.findByIdAndUpdate(req.user._id, {password: hash})
                 .then(() => {
                     req.flash('success', 'Password changed.');
-                    res.redirect('/settings');
+                    return res.redirect('/settings');
                 })
-                .catch(err => console.error(err));
+                .catch(err => errorHandling(err));
             })
-            .catch(err => console.err(err));
+            .catch(err => errorHandling(err));
         })
-        .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
     };
 };
 
@@ -210,9 +226,13 @@ let genUser = (req, res, username, password, email) => {
                 req.flash('success', 'Successfully registered.');
                 res.redirect('/register');
             })
-            .catch(err => console.error(err));
+            .catch(err => errorHandling(err));
         })
-        .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
+};
+
+function errorHandling(err) {
+    return console.error(err);
 };

@@ -3,13 +3,13 @@
 <div class="column height-limit">
     <div class="left-half holder overflow">
         <h3>Available Tags</h3>
-        <ul class="five-col-grid">
+        <ul class="tags-grid">
         <% tags.forEach(function(tag) { %>
             <li class="btn select grid-item" value="<%=tag._id%>"><%=tag.name%></li>
         <% }); %>
         </ul>
         <h3>Selected Tags</h3>
-        <ul class="selected five-col-grid">
+        <ul class="selected tags-grid">
             <% image.tags.forEach(function(imageTag) { %>
                 <li class="deselect selected-tag" value="<%=imageTag._id%>"><%=imageTag.name%></li>
             <% }); %>

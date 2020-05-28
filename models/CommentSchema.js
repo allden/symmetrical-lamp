@@ -23,7 +23,7 @@ const CommentSchema = new Schema({
 CommentSchema
 .virtual('formatDate')
 .get(function() {
-    return this.created.toUTCString();
+    return this.created.toLocaleString();
 });
 
 module.exports = mongoose.model('Comment', CommentSchema);

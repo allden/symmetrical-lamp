@@ -1,17 +1,19 @@
 :root {
-    --primary: #557fad;
-    --secondary: #3f85cf;
+    --primary: #3D7BC2;
+    --secondary: #6495CE;
     --light: #eee;
     --grey: #999;
     --dark: #333;
     --darker: #222;
-    --warn: #d65351;
-    --success: #77b44b;
+    --warn: #CD4632;
+    --success: #E39339;
+    --anim-interval: .4s;
 }
 
 body {
-    background: var(--light);
+    background: var(--darker);
     font-family: 'Lato', sans-serif;
+    color: var(--light);
 }
 
 * {
@@ -65,4 +67,8 @@ footer {
 
 ul {
     list-style: none;
+}
+
+pre {
+    font-family: 'Lato', sans-serif;
 }

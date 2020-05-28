@@ -3,6 +3,7 @@ const Comment = require('../models/CommentSchema');
 const Tag = require('../models/TagSchema');
 const path = require('path');
 const fs = require('fs');
+const sharp = require('sharp');
 
 module.exports.imageForm = (req, res) => {
     Tag.find({})
@@ -10,7 +11,7 @@ module.exports.imageForm = (req, res) => {
     .then((tags) => {
         res.render('imageForm', {nsfw: false, title: '', tags});
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.imagePost = (req, res) => {
@@ -20,8 +21,14 @@ module.exports.imagePost = (req, res) => {
         let formTags = req.body.tags;
         nsfw === 'true' ? nsfw = true : nsfw = false;
         formTags = formTags.split(', ');
-        let path = '';
-        if(req.file) { path = '/' + req.file.path.split('/').slice(1).join('/'); }
+
+        let imagePath = '/'
+
+        if(req.file) {
+            // replace \ with / so that it will be consistent on both windows and linux
+            filePath = req.file.path.replace(/\\/g, '/');
+            imagePath = '/' + filePath.split('/').slice(1).join('/');
+        };
 
         let errors = []
     
@@ -43,26 +50,49 @@ module.exports.imagePost = (req, res) => {
         
         if(errors.length > 0) {
             req.flash('error', errors);
-            res.render('imageForm', {errMsg: req.flash('error'), successMsg: req.flash('success'), title, nsfw, tags});
+            if(req.file) {
+                fs.unlinkSync(path.join(__dirname, '..', 'public', imagePath.slice(1)));
+            };
+            return res.render('imageForm', {errMsg: req.flash('error'), successMsg: req.flash('success'), title, nsfw, tags});
         } else {
-            let newImage = new Image({
-                creator: req.user._id,
-                title,
-                tags: formTags,
-                path,
-                nsfw
-            }).save()
-            .catch(err => console.error(err));
-    
-            req.flash('success', 'Image uploaded successfully.');
-            res.redirect('/upload');
+            // image compression for thumbnails
+            const fileName = `${req.file.filename.split('.')[0]}-thumbnail.jpeg`;
+            let thumbnailDest = path.join(__dirname, '..', 'public', 'images', 'thumbnails', fileName);
+            let dbThumbnailDest = path.join('/', 'images', 'thumbnails', fileName);
+
+            sharp(req.file.path)
+            .resize(600)
+            .toFile(thumbnailDest, (err, info) => {
+                if(err) errorHandling(err);
+
+                let newImage = new Image({
+                    creator: req.user._id,
+                    title,
+                    tags: formTags,
+                    path: imagePath,
+                    thumbnail: dbThumbnailDest,
+                    nsfw
+                })
+                .save()
+                .then(() => {
+                    req.flash('success', 'Image uploaded successfully.');
+                    return res.redirect('/upload');
+                })
+                .catch(err => errorHandling(err));
+            });
+
         };
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.imagePage = (req, res) => {
     let id = req.params.id;
+
+    if(id.length !== 24) {
+        return res.render('404');
+    };
+
     Image.findByIdAndUpdate(id, {$inc: {views: 1}})
     .then(() => {
         Image.findById(id)
@@ -71,35 +101,54 @@ module.exports.imagePage = (req, res) => {
         .sort({tags: 1})
         .exec()
         .then(image => {
+            if(!image) {
+                return res.render('404');
+            };
+
             Comment.find({location: image._id})
             .populate('creator')
             .sort({created: -1})
             .exec()
             .then(comments => {
-                res.render('imagePage', {errMsg: req.flash('error'), image, comments});
+                return res.render('imagePage', {errMsg: req.flash('error'), image, comments});
             })
-            .catch(err => console.error(err));
+            .catch(err => errorHandling(err));
         })
-        .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.imageDelete = (req, res) => {
     let id = req.params.id;
-    Image.findByIdAndDelete(id)
-    .then(image => {
-        fs.unlink(path.join(__dirname, '..', 'public', image.path.slice(1)), err => {
-            if (err) throw err;
+    Image.findById({_id: id})
+    .then(found => {
+        if((found.creator.toString() !== req.user._id.toString()) && req.user.admin === false) {
+            req.flash('error', 'You lack the necessary permissions to peform this action.');
+            return res.render('/');
+        };
+
+        Image.findByIdAndDelete(id)
+        .then(image => {
+            // on image deletion, also remove the associated files
+            if(image.path && image.path !== '/') {
+                // .slice(1) is so that the '/' gets removed as well.
+                fs.unlinkSync(path.join(__dirname, '..', 'public', image.path.slice(1)));
+               if(image.thumbnail && image.thumbnail !== '/') {
+                    fs.unlinkSync(path.join(__dirname, '..', 'public', image.thumbnail.slice(1)));
+               };
+            };
+    
             Comment.deleteMany({location: image._id})
             .then(() => {
                 req.flash('success', 'Image was deleted.');
-                res.redirect('/');
+                return res.redirect('/');
             })
-            .catch(err => console.error(err));
-        });
+            .catch(err => errorHandling(err));
+        })
+        .catch(err => errorHandling(err));
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.imageUpdate = (req, res) => {
@@ -113,28 +162,37 @@ module.exports.imageUpdate = (req, res) => {
         .sort({tags: 1})
         .exec()
         .then(image => {
-            res.render('imageUpdate', {tags, image});
+            return res.render('imageUpdate', {tags, image});
         })
-        .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.imageUpdatePost = (req, res) => {
     let id = req.params.id;
     let tags = req.body.tags.split(', ');
 
-    if(tags[0] == '') {
-        req.flash('error', 'Please include at least one tag.');
-        res.redirect('');
-    };
+    Image.findById({_id: id})
+    .then(found => {
+        if((found.creator.toString() !== req.user._id.toString()) && req.user.admin === false) {
+            req.flash('error', 'You lack the necessary permissions to peform this action.');
+            return res.render('/');
+        };
 
-    Image.findByIdAndUpdate(id, {tags})
-    .then((image) => {
-        req.flash('Successfully updated.');
-        res.redirect(image.url);
+        if(!tags || tags[0] == '') {
+            req.flash('error', 'Please include at least one tag.');
+            return res.redirect('');
+        };
+    
+        Image.findByIdAndUpdate(id, {tags})
+        .then((image) => {
+            req.flash('Successfully updated.');
+            return res.redirect(image.url);
+        })
+        .catch(err => errorHandling(err));
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.imageFavorite = (req, res) => {
@@ -143,9 +201,9 @@ module.exports.imageFavorite = (req, res) => {
     Image.findByIdAndUpdate(id, {$push: {favorites: req.user._id}})
     .then(image => {
         req.flash('success', 'Image favorited!');
-        res.redirect(image.url);
+        return res.redirect(image.url);
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.imageUnfavorite = (req, res) => {
@@ -154,7 +212,7 @@ module.exports.imageUnfavorite = (req, res) => {
     Image.findByIdAndUpdate(id, {$pull: {favorites: req.user._id}})
     .then(image => {
         req.flash('success', 'Image is no longer in your favorites!');
-        res.redirect(image.url);
+        return res.redirect(image.url);
     })
 };
 
@@ -174,11 +232,15 @@ module.exports.indexPage = (req, res) => {
             .skip(limiter*page)
             .exec()
             .then(images => {
-                res.render('index', { images, totalPages, tags, page });
+                return res.render('index', { images, totalPages, tags, page });
             })
-            .catch(err => console.error(err));
+            .catch(err => errorHandling(err));
         })
-        .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
+};
+
+function errorHandling(err) {
+    return console.error(err);
 };

@@ -20,14 +20,14 @@
                 <% images.forEach(function(image) { %>
                     <!-- nsfw/sfw block -->
                     <% if(image.nsfw) { %>
-                        <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
+                        <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.thumbnail%>"></a>
                     <% } else { %>
-                        <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+                        <a href="<%=image.url%>"><img src="<%=image.thumbnail%>"></a>
                     <% }; %>
                     <!-- end -->
                 <% }); %>
             <% } else { %>
-                <p>This pageUser has no submissions.</p>
+                <p>This user has no favorites.</p>
             <% }; %>
         </div>
         <!-- pagination -->

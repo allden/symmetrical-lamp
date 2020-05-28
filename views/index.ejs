@@ -1,7 +1,7 @@
 <!-- needs to be fixed++++ -->
 <div class="box row">
     <%- include('./errorHandling/messages'); %>
-    <div class="column align-top">
+    <div class="column align-top stretch">
         <div class="left row">
             <h3>Search</h3>
             <form class="justify-center row" method="POST" action="/search">
@@ -23,9 +23,9 @@
                     <% images.forEach(function(image) { %>
                         <!-- nsfw/sfw block -->
                         <% if(image.nsfw) { %>
-                            <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.path%>"></a>
+                            <a class="gallery-item" href="<%=image.url%>"><div class="cover"><p>NSFW</p><p>Click to View</p></div><img src="<%=image.thumbnail%>"></a>
                         <% } else { %>
-                            <a href="<%=image.url%>"><img src="<%=image.path%>"></a>
+                            <a href="<%=image.url%>"><img src="<%=image.thumbnail%>"></a>
                         <% }; %>
                         <!-- end -->
                     <% }); %>

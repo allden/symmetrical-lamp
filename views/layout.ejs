@@ -15,7 +15,9 @@
             <div class="nav-item column">
                 <a class="btn menu-btn" href="/">Home</a>
                 <a class="btn menu-btn" href="<%=user.url%>">Profile</a>
-                <a class="btn menu-btn" href="/tags">Tags</a>
+                <% if(user.admin) { %>
+                    <a class="btn menu-btn" href="/tags">Tags</a>
+                <% }; %>
                 <a class="btn menu-btn" href="/upload">Upload</a>
                 <a class="btn menu-btn" href="/settings">Account Settings</a>
                 <a class="btn menu-btn" href="/logout">Log Out</a>
@@ -23,14 +25,13 @@
         <%} else { %>
             <div class="nav-item column">
                 <a class="btn menu-btn" href="/">Home</a></li>
-                <a class="btn menu-btn" href="/tags">Tags</a></li>
                 <a class="btn menu-btn" href="/login">Log In</a></li>
                 <a class="btn menu-btn" href="/register">Register</a></li>
             </div>
         <% }; %>
     </nav>
     <%- body %>
-    <footer class="foobar justify-center white-text">
+    <footer class="foobar justify-center white-text center-text">
         <p>I do not own any of the images on this website and it was created purely for educational purposes.</p>
     </footer>
 </body>

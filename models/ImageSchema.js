@@ -3,7 +3,16 @@ const Schema = mongoose.Schema;
 
 const ImageSchema = new Schema({
     title: String,
-    path: String,
+    path: {
+        type: String,
+        required: true,
+        default: '/'
+    },
+    thumbnail: {
+        type: String,
+        required: true,
+        default: '/'
+    },
     creator: {
         type: Schema.Types.ObjectId, 
         ref: 'User'
@@ -27,7 +36,7 @@ const ImageSchema = new Schema({
 ImageSchema
 .virtual('formatDate')
 .get(function() {
-    return this.uploaded.toUTCString();
+    return this.uploaded.toLocaleString();
 });
 
 ImageSchema

@@ -2,55 +2,65 @@ const Tag = require('../models/TagSchema');
 const Image = require('../models/ImageSchema');
 
 module.exports.tags = (req, res) => {
+    if(req.user.admin === false) {
+        req.flash('error', 'You do not have permission to access this resource.');
+        return res.redirect('/');
+    };
+
     Tag.find({})
     .then(tags => {
         res.render('tags', { tags });
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.tagDelete = (req, res) => {
     let id = req.params.id;
 
-    Tag.findByIdAndDelete(id)
-    .then((tag) => {
-        Image.find({tags: tag._id})
-        .then(images => {
-            let deleteAllInstances = new Promise((resolve, reject) => {
-                let existing = [];
-                for(let i = 0; i < images.length; i++) {
-                    existing.push(images[i]._id);
-                };
+    if(req.user.admin) {
+        Tag.findByIdAndDelete(id)
+        .then((tag) => {
+            Image.find({tags: tag._id})
+            .then(images => {
+                let deleteAllInstances = new Promise((resolve, reject) => {
+                    let existing = [];
+                    for(let i = 0; i < images.length; i++) {
+                        existing.push(images[i]._id);
+                    };
+        
+                    existing.forEach(imgId => {
+                        Image.findByIdAndUpdate(imgId, {tags: {$pull: {tags: tag._id}}});
+                    });
     
-                existing.forEach(imgId => {
-                    Image.findByIdAndUpdate(imgId, {tags: {$pull: {tags: tag._id}}});
+                    resolve();
                 });
-
-                resolve();
-            });
-
-            deleteAllInstances.then(() => {
-                req.flash('success', 'Successfully deleted.');
-                res.redirect('/tags');
+    
+                deleteAllInstances.then(() => {
+                    req.flash('success', 'Successfully deleted.');
+                    return res.redirect('/tags');
+                })
+                .catch(err => errorHandling(err));
             })
-            .catch(err => console.error(err));
+            .catch(err => errorHandling(err));
         })
-        .catch(err => console.error(err));
-    })
-    .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
+    } else {
+        req.flash('error', 'You do not have the permissions to do perform this action.');
+        return res.redirect('/tags');
+    };
 };
 
 module.exports.tagsCreate = (req, res) => {
     let tags = req.body.tags.split(', ');
 
     if(req.user.admin === false) {
-        req.flash('error', 'You do not have the permissions for this.');
-        res.redirect('/tags');
+        req.flash('error', 'You do not have the permissions to do perform this action.');
+        return res.redirect('/tags');
     };
 
     if(tags[0] == '') {
         req.flash('error', 'Tags must not be empty.');
-        res.redirect('/tags');
+        return res.redirect('/tags');
     };
     
     // iterate through tags variable, replace every instance of a space with an underscore and then 
@@ -60,16 +70,16 @@ module.exports.tagsCreate = (req, res) => {
             let tag = tags[i].replace(' ', '_');
             Tag.findOneAndUpdate({ name: tag }, { name: tag, created: new Date() }, { upsert: true })
             .then(doc => console.log(doc))
-            .catch(err => console.error(err));
+            .catch(err => errorHandling(err));
             if(i === tags.length-1) resolve();
         };
     });
 
     tagFunc.then(() => {
         req.flash('success', 'Successfully created tag(s).');
-        res.redirect('/tags');
+        return res.redirect('/tags');
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.tagPage = (req, res) => {
@@ -88,15 +98,15 @@ module.exports.tagPage = (req, res) => {
                 .limit(limiter)
                 .skip(limiter * page)
                 .then(images => {
-                    res.render('index', {images, tags, totalPages, page});
+                    return res.render('index', {images, tags, totalPages, page});
                 })
-                .catch(err => console.error(err));
+                .catch(err => errorHandling(err));
             })
-            .catch(err => console.error(err));
+            .catch(err => errorHandling(err));
         })
-        .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
 };
 
 module.exports.searchByTags = (req, res) => {
@@ -104,17 +114,16 @@ module.exports.searchByTags = (req, res) => {
     let tagsMatched = [];
     let searchIteration = new Promise((resolve, reject) => {
         searchParams.forEach(param => {
-            console.log(param);
             Tag.findOne({name: param})
             .then(tag => {
                 tagsMatched.push(tag._id);
             })
             .catch(err => {
-                console.error(err)
+                errorHandling(err)
                 reject();
             });
         })
-        console.log(tagsMatched);
+
         resolve();
     });
 
@@ -130,12 +139,16 @@ module.exports.searchByTags = (req, res) => {
                 .limit(limiter)
                 .skip(limiter * page)
                 .then(images => {
-                    res.render('index', {images, totalPages, tags, page});
+                    return res.render('index', {images, totalPages, tags, page});
                 })
-                .catch(err => console.error(err));
+                .catch(err => errorHandling(err));
             })
-            .catch(err => console.error(err));
+            .catch(err => errorHandling(err));
         })
-        .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
     });
-}
+};
+
+function errorHandling(err) {
+    return console.error(err);
+};

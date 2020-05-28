@@ -1,14 +1,14 @@
-<div class="box center row white-text height-limit">
-    <div class="holder bg-dark">
+<div class="box center row white-text height-limit center-text">
+    <div class="holder box-l bg-dark">
         <%- include('./errorHandling/messages'); %>
         <h3>Available Tags</h3>
-        <ul class="five-col-grid center-text">
+        <ul class="tags-grid center-text">
         <% tags.forEach(function(tag) { %>
             <li class="select grid-item btn white-text" value="<%=tag._id%>"><%=tag.name%></li>
         <% }); %>
         </ul>
         <h3>Selected Tags</h3>
-        <ul class="selected five-col-grid center-text"></ul>
+        <ul class="selected tags-grid center-text"></ul>
         </ul>
         <form class="row" action="/upload" method="POST" enctype="multipart/form-data">
             <label for="title">Title</label>

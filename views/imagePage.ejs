@@ -1,4 +1,4 @@
-<div class="box row">
+<div class="box row height-limit">
     <%- include('./errorHandling/messages'); %>
     <div class="column align-top stretch m-b">
         <div class="left row">
@@ -68,7 +68,7 @@
                                 <li><a href="<%=comment.creator.url%>"><%= comment.creator.username %></a></li>
                                 <li class="opaque"><%= comment.formatDate %></li>
                             </div>
-                            <li><%= comment.content %></li>
+                            <li><pre><%= comment.content %></pre></li>
                         </ul>
                     </div>
                 <% }); %>

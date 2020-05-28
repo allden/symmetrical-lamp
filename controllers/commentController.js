@@ -11,12 +11,12 @@ module.exports.postComment = (req, res) => {
     .then(image => {
         if(!content) {
             req.flash('Comment must not be empty.');
-            res.redirect(image.url);    
+            return res.redirect(image.url);    
         };
     
         if(!req.user) {
             req.flash('You must be logged in to do this.');
-            res.redirect(image.url);
+            return res.redirect(image.url);
         };
 
         let newComment = new Comment({
@@ -28,11 +28,15 @@ module.exports.postComment = (req, res) => {
             Image.findByIdAndUpdate(id, {$push: {comments: comment._id}})
             .then(() => {
                 req.flash('success', 'Comment posted successfully!')
-                res.redirect(image.url);
+                return res.redirect(image.url);
             })
-            .catch(err => console.error(err));
+            .catch(err => errorHandling(err));
         })
-        .catch(err => console.error(err));
+        .catch(err => errorHandling(err));
     })
-    .catch(err => console.error(err));
+    .catch(err => errorHandling(err));
+};
+
+function errorHandling(err) {
+    return console.error(err);
 };
