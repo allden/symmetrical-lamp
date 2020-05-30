@@ -7,9 +7,8 @@ Technologies used for backend:
 Frameworks:
 - Express, Mongoose
 
-The website has session based authentication configured with Passport.js. 
-
 Website Features:
+- The website features session based authentication configured with Passport.js. 
 - Uploading, deleting, editing and viewing images posted by authenticated users.
 - Favorite and views metrics along with a comment system for each image.
 - A tag system where you are able to search through the database for images featuring a specific tag.
