@@ -1,3 +1,5 @@
+All of my schemas can be found in "models" and all of my functions can be found in "controllers". The CSS, scripts and images can be found in "public", while the EJS (HTML) can be found in "views".
+
 Technologies used for frontend: HTML, CSS and JS.
 
 Technologies used for backend: MongoDB, Node
