@@ -1,11 +1,8 @@
-Technologies used for frontend:
-- The EJS templating engine (HTML, CSS, vanilla JS)
+Technologies used for frontend: HTML, CSS and JS.
 
-Technologies used for backend:
-- MongoDB, Node
+Technologies used for backend: MongoDB, Node
 
-Frameworks:
-- Express, Mongoose
+Frameworks: Express, Mongoose
 
 Website Features:
 - The website features session based authentication configured with Passport.js. 
