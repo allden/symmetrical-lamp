@@ -1,8 +1,8 @@
 Technologies used for frontend:
-- The EJS templating engine (HTML, CSS, vanilla JS).
+- The EJS templating engine (HTML, CSS, vanilla JS)
 
 Technologies used for backend:
-- MongoDB, Node.
+- MongoDB, Node
 
 Frameworks:
 - Express, Mongoose
