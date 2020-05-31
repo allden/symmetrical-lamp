@@ -14,3 +14,5 @@ Website Features:
 - Separate permissions for administrators and users.
 - Changing user information such as password, description, profile picture.
 - The website is optimized for performance, with every image being compressed down to a few kbs, which ensures fast loading speed.
+- Password hashing using bcryptjs.
+- User input validation.
